@@ -3,75 +3,98 @@
 <html>
 
 <head>
-  <!-- Basic -->
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <!-- Mobile Metas -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <!-- Site Metas -->
-  <meta name="keywords" content="" />
-  <meta name="description" content="" />
-  <meta name="author" content="" />
-  <link rel="shortcut icon" href="{% static 'website/images/favicon.png' %}" type="">
+    <!-- Basic -->
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <!-- Site Metas -->
+    <meta name="keywords" content=""/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <link rel="shortcut icon" href="{% static 'website/images/favicon.png' %}" type="">
 
-  <title> A-Mirza </title>
+    <title> A-Mirza </title>
 
-  <!-- bootstrap core css -->
-  <link rel="stylesheet" type="text/css" href="{% static 'website/css/bootstrap.css' %}" />
+    <!-- bootstrap core css -->
+    <link rel="stylesheet" type="text/css" href="{% static 'website/css/bootstrap.css' %}"/>
 
-  <!--owl slider stylesheet -->
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
-  <!-- nice select  -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css" integrity="sha512-CruCP+TD3yXzlvvijET8wV5WxxEh5H8P4cmz0RFbKK6FlZ2sYl3AEsKlLPHbniXKSrDdFewhbmBK5skbdsASbQ==" crossorigin="anonymous" />
-  <!-- font awesome style -->
-  <link href="{% static 'website/css/font-awesome.min.css' %}" rel="stylesheet" />
+    <!-- templates -->
+    <link rel="stylesheet" href="{% static 'user/css/staff.css' %}">
+    <link rel="stylesheet" href="{% static 'user/css/all_staffs.css' %}">
 
-  <!-- Custom styles for this template -->
-  <link href="{% static 'website/css/style.css' %}" rel="stylesheet" />
-  <!-- responsive style -->
-  <link href="{% static 'website/css/responsive.css' %}" rel="stylesheet" />
+    <!--owl slider stylesheet -->
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css"/>
+    <!-- nice select  -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css"
+          integrity="sha512-CruCP+TD3yXzlvvijET8wV5WxxEh5H8P4cmz0RFbKK6FlZ2sYl3AEsKlLPHbniXKSrDdFewhbmBK5skbdsASbQ=="
+          crossorigin="anonymous"/>
+    <!-- font awesome style -->
+    <link href="{% static 'website/css/font-awesome.min.css' %}" rel="stylesheet"/>
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'website/css/style.css' %}" rel="stylesheet"/>
+    <!-- responsive style -->
+    <link href="{% static 'website/css/responsive.css' %}" rel="stylesheet"/>
 
 </head>
 
 {% block body %}
-<body>
+    <body>
 
 {% endblock %}
 
-{% block hero-area %}
-    {# include header #}
-    {% include 'website/hero_area_section.html' %}
-{% endblock hero-area %}
+
+<div class="hero_area">
+    <div class="bg-box">
+        <img src="{% static 'website/images/hero-bg.jpg' %}" alt="">
+    </div>
+
+    <!-- header section starts -->
+    {% block header %}
+        {% include 'website/sections/header_section.html' %}
+    {% endblock header %}
+    <!-- end header section -->
+
+    <!-- slider section -->
+    {% block slide-section %}
+        {% include 'website/sections/slider_section.html' %}
+    {% endblock slide-section %}
+    <!-- end slider section -->
+</div>
 
 {% block content %}
-    {% include 'website/home.html' %}
+    {% include 'website/pages/home.html' %}
 {% endblock content %}
 
 {% block footer %}
-    {% include 'website/footer_section.html' %}
+    {% include 'website/sections/footer_section.html' %}
 {% endblock footer %}
 
 
-  <!-- jQery -->
-  <script src="{% static 'website/js/jquery-3.4.1.min.js' %}"></script>
-  <!-- popper js -->
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
-  </script>
-  <!-- bootstrap js -->
-  <script src="{% static 'website/js/bootstrap.js' %}"></script>
-  <!-- owl slider -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js">
-  </script>
-  <!-- isotope js -->
-  <script src="https://unpkg.com/isotope-layout@3.0.4/dist/isotope.pkgd.min.js"></script>
-  <!-- nice select -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js"></script>
-  <!-- custom js -->
-  <script src="{% static 'website/js/custom.js' %}"></script>
-  <!-- Google Map -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh39n5U-4IoWpsVGUHWdqB6puEkhRLdmI&callback=myMap">
-  </script>
-  <!-- End Google Map -->
+<!-- jQery -->
+<script src="{% static 'website/js/jquery-3.4.1.min.js' %}"></script>
+<!-- popper js -->
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+</script>
+<!-- bootstrap js -->
+<script src="{% static 'website/js/bootstrap.js' %}"></script>
+<!-- owl slider -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js">
+</script>
+<!-- isotope js -->
+<script src="https://unpkg.com/isotope-layout@3.0.4/dist/isotope.pkgd.min.js"></script>
+<!-- nice select -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js"></script>
+<!-- custom js -->
+<script src="{% static 'website/js/custom.js' %}"></script>
+<!-- Google Map -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh39n5U-4IoWpsVGUHWdqB6puEkhRLdmI&callback=myMap">
+</script>
+<!-- End Google Map -->
 
 </body>
 

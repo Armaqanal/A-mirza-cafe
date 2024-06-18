@@ -11,7 +11,7 @@
 {% endblock slide-section %}
 
 {% block content %}
-    <h1 class="my-3" style="text-align: center">All Staffs Page</h1>
+    <h1 class="my-3" style="text-align: center">All customers Page</h1>
 
     {# resource #}
     {# https://bootdey.com/snippets/view/User-grid #}
@@ -21,17 +21,17 @@
 
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 gutters-sm">
 
-                {% for staff in all_staffs %}
+                {% for customer in all_customers %}
                     <div class="col-3 mb-3">
                         <div class="card" style="height: 400px">
                             <div class="rounded-top" style="height:120px; width: 100%; background-color: {{ colors|random }}"></div>
                             <div class="card-body text-center">
-                                <a href="{% url 'staff-profile' staff.username %}">
-                                    <img src="{{ staff.photo.url }}"
+                                <a href="{% url 'customer-profile' customer.username %}">
+                                    <img src="{{ customer.photo.url }}"
                                          style="width:100px;margin-top:-65px" alt="User"
                                          class="img-fluid img-thumbnail rounded-circle border-0 mb-3">
                                 </a>
-                                <h5 class="card-title">{{ staff.username }}</h5>
+                                <h5 class="card-title">{{ customer.username }}</h5>
                                 <p class="text-secondary mb-1">Full Stack Developer</p>
                                 <p class="text-muted font-size-sm">Bay Area, San Francisco, CA</p>
                             </div>

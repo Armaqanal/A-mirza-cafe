@@ -1,3 +1,6 @@
+import os
+from django.db.models.signals import pre_save, post_delete
+from django.dispatch import receiver
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.validators import RegexValidator
 from django.db import models
@@ -15,9 +18,9 @@ class DateFieldsMixin(models.Model):
 
 
 class Person(DateFieldsMixin, models.Model):
-    def profile_image_upload_to(self, filename):
+    def profile_image_upload_to(instance, filename):
         extension = Path(filename).suffix
-        return f'profile_photos/{self.__class__.__name__}/{self.username}{extension}'
+        return f'profile_photos/{instance.__class__.__name__.lower()}/{instance.username}{extension}'
 
     # validators
     username_validator = UnicodeUsernameValidator()
@@ -40,6 +43,7 @@ class Person(DateFieldsMixin, models.Model):
         blank=True
     )
     phone = models.CharField(max_length=40, validators=[phone_regex])
+    email = models.EmailField()
     address = models.TextField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
@@ -67,3 +71,27 @@ class Staff(Person):
 
 class Customer(Person):
     balance = models.IntegerField(default=0, blank=False)
+
+
+@receiver(post_delete, sender=Person)
+def delete_customer_profile_photo(sender, instance: Person, **kwargs):
+    if instance.photo:
+        if os.path.isfile(instance.photo.path):
+            os.remove(instance.photo.path)
+
+
+@receiver(pre_save, sender=Person)
+def delete_old_customer_profile_photo(sender, instance: Person, **kwargs):
+    if not instance.id:
+        return False
+
+    try:
+        old_person = Person.objects.get(id=instance.id)
+    except Customer.DoesNotExist:
+        return False
+
+    # TODO: What if my 'upload_to' uses a method that generate file name from username?
+    # TODO: What if the user's photo is 'default_profile_?
+    if old_person.photo:
+        if os.path.isfile(old_person.photo.path):
+            os.remove(old_person.photo.path)

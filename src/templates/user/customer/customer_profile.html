@@ -11,7 +11,7 @@
 {% endblock slide-section %}
 
 {% block content %}
-    <h1 style="text-align: center">Staff Page</h1>
+    <h1 style="text-align: center">Customer Page</h1>
 
     {# resource #}
     {# https://bootdey.com/snippets/view/profile-with-data-and-skills #}
@@ -23,9 +23,9 @@
                     <div class="card" style="height: 100%">
                         <div class="card-body">
                             <div class="d-flex flex-column align-items-center text-center">
-                                <img src="{{ staff.photo.url }}" alt="Admin" class="rounded-circle" width="250">
+                                <img src="{{ customer.photo.url }}" alt="Admin" class="rounded-circle" width="250">
                                 <div class="mt-3">
-                                    <h4>{{ staff.username }}</h4>
+                                    <h4>{{ customer.username }}</h4>
 
                                 </div>
                             </div>
@@ -41,7 +41,7 @@
                                     <h6 class="mb-0">Full Name</h6>
                                 </div>
                                 <div class="col-sm-9 text-secondary">
-                                    {{ staff.first_name }} {{ staff.last_name }}
+                                    {{ customer.first_name }} {{ customer.last_name }}
                                 </div>
                             </div>
                             <hr>
@@ -50,7 +50,7 @@
                                     <h6 class="mb-0">Email</h6>
                                 </div>
                                 <div class="col-sm-9 text-secondary">
-                                    fip@jukmuh.al
+                                    {{ customer.email }}
                                 </div>
                             </div>
                             <hr>
@@ -59,16 +59,7 @@
                                     <h6 class="mb-0">Phone</h6>
                                 </div>
                                 <div class="col-sm-9 text-secondary">
-                                    (239) 816-9029
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    <h6 class="mb-0">Mobile</h6>
-                                </div>
-                                <div class="col-sm-9 text-secondary">
-                                    (320) 380-4539
+                                    {{ customer.phone }}
                                 </div>
                             </div>
                             <hr>
@@ -77,7 +68,25 @@
                                     <h6 class="mb-0">Address</h6>
                                 </div>
                                 <div class="col-sm-9 text-secondary">
-                                    Bay Area, San Francisco, CA
+                                    {{ customer.address }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Balance</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ customer.balance }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Date Joined</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ customer.created_at|date }}
                                 </div>
                             </div>
                             <hr>
@@ -94,5 +103,4 @@
 
         </div>
     </div>
-
 {% endblock content %}

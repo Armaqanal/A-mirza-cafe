@@ -8,7 +8,11 @@ urlpatterns = [
     path('book/', views.book, name='book'),
 
     # menu
-    path('menu/', views.all_food, name='menu'),
-    path('menu/mock', views.mock_menu_item, name='menu-mock'),
-    path('category/mock', views.mock_menu_category, name='category-mock'),
+    path('menu/<str:selected_category>/', views.menu, name='menu'),
+
+    # not important
+    path('mock/menu/', views.mock_menu_item, name='menu-mock'),
+    path('mock/category/', views.mock_menu_category, name='category-mock'),
+    path('remove/category/', views.remove_all_categories, name='remove-all-categories'),
+    path('remove/menu/', views.remove_all_menu_items, name='remove-all-menu-items'),
 ]

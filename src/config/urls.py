@@ -20,13 +20,15 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    # django debug toolbar
+    path("__debug__/", include("debug_toolbar.urls")),
+
+    # others
     path('admin/', admin.site.urls),
     path('', include('menu.urls')),
     path('user/', include('user.urls')),
     path('order/', include('order.urls')),
 
-    # django debug toolbar
-    path("__debug__/", include("debug_toolbar.urls")),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

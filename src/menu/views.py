@@ -1,9 +1,8 @@
 import os
 import random
 
-import faker
-from pathlib import Path
 from django.shortcuts import render, redirect
+
 from .models import MenuCategory, MenuItem
 
 
@@ -19,17 +18,23 @@ def book(request):
     return render(request, 'website/pages/book.html')
 
 
-def all_food(request):
-    # TODO: Show only available food
-    all_categories = MenuCategory.objects.prefetch_related("menu_items").all()
+def menu(request, selected_category=None):
+    categories = MenuCategory.objects.all()
+    if selected_category == 'all':
+        menu_items = MenuItem.objects.all()
+    else:
+        menu_items = MenuItem.objects.filter(menu_category__label=selected_category)
+
+    if request.method == 'GET':
+        if searched_keyword := request.GET.get('q'):
+            menu_items = menu_items.filter(food_name__icontains=searched_keyword)
+
     context = {
-        "all_categories": all_categories,
+        "categories": categories,
+        "menu_items": menu_items,
+        "selected_category": selected_category
     }
     return render(request, 'menu/menu.html', context)
-
-
-def food_of_a_category(request, category_label):
-    return
 
 
 LABEL_LIST = ['Iced Coffee', 'Hot Coffee', 'Fruit Juice', 'Burger', 'Pizza', 'Pasta', 'Fries']
@@ -41,7 +46,7 @@ def mock_menu_category(request):
             label=label
         )
         new_cat.save()
-    return redirect('menu')
+    return redirect('menu', 'all')
 
 
 def mock_menu_item(request):
@@ -59,9 +64,9 @@ def mock_menu_item(request):
                 menu_category=category
             )
             resource_photo_path = photos_dir + photo_file
-            print('**'*20, photo_file)
-            print('**'*20, category.label)
-            print('**'*20, resource_photo_path)
+            print('**' * 20, photo_file)
+            print('**' * 20, category.label)
+            print('**' * 20, resource_photo_path)
             with open(resource_photo_path, 'rb') as f_resource:
                 target_photo_path = f'media/menu_item_images/{category.label}/{photo_file}'
                 os.makedirs(target_photo_path.removesuffix(photo_file), exist_ok=True)
@@ -70,4 +75,21 @@ def mock_menu_item(request):
 
             new_item.image = target_photo_path.removeprefix('media/')
             new_item.save()
-    return redirect('menu')
+    return redirect('menu', 'all')
+
+
+def remove_all_menu_items(request):
+    for item in MenuItem.objects.all():
+        item.delete()
+
+    return redirect('menu', 'all')
+
+
+def remove_all_categories(request):
+    for cat in MenuCategory.objects.all():
+        cat.delete()
+
+    return redirect('menu', 'all')
+
+# TODO: View to show recent restaurants
+# TODO: View for food party

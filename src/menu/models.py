@@ -22,7 +22,7 @@ class MenuItem(DateFieldsMixin, models.Model):
     price = models.PositiveIntegerField(default=0)
     discount = models.DecimalField(
         max_digits=3,
-        decimal_places=2,
+        decimal_places=1,
         default=0.0,
         validators=[
             MaxValueValidator(1.0),
@@ -45,7 +45,7 @@ class MenuItem(DateFieldsMixin, models.Model):
 
     @property
     def discounted_price(self):
-        return self.price * (1 - self.discount)
+        return round(self.price * (1 - self.discount))
 
 
 @receiver(post_delete, sender=MenuItem)

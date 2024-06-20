@@ -3,8 +3,12 @@ from django.urls import reverse
 from django.utils.html import format_html
 from . import models
 
-admin.site.register(models.Customer)
+# admin.site.register(models.Customer)
 
+@admin.register(models.Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    date_hierarchy = "created_at"
+    list_display = ["id", "username", "photo"]
 
 @admin.register(models.Staff)
 class StaffAdmin(admin.ModelAdmin):

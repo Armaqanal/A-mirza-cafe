@@ -100,7 +100,7 @@
                                                 remained: {{ menu_item.inventory }}
                                             </h6>
                                         </div>
-                                        <a href="{% url 'submit-order' selected_category %}">
+                                        <a href="{% url 'submit-order' selected_category menu_item.id %}">
                                             {#                                        <form action="{% url 'submit-order' selected_category %}" method="post">#}
                                             {#                                            <button type="submit" >#}
                                             <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"

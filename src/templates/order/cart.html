@@ -12,4 +12,26 @@
 
 {% block content %}
     <h1 style="text-align: center">Cart Page</h1>
+
+    {% if unpaid_order_items %}
+
+        {% for order_item in unpaid_order_items %}
+            <div class="d-flex flex-row justify-content-center align-items-center ">
+                <div>
+                    <img class="rounded-circle " src="{{ order_item.menu_item.image.url }}"
+                         alt="{{ order_item.menu_item.food_name }}" height="75" width="75">
+                    <p>{{ order_item.menu_item.food_name }}</p>
+                </div>
+                <div class="d-flex flex-row align-items-center">
+                    <p class="px-2">${{ order_item.discounted_price }}</p>
+                    <p class="px-2"> X </p>
+                    <p class="px-2">{{ order_item.quantity }}</p>
+                    <p class="px-2"> = </p>
+                    <p class="px-2">{{ order_item.total_discounted_price }}</p>
+                </div>
+            </div>
+        {% endfor %}
+
+    {% endif %}
+
 {% endblock content %}

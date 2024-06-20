@@ -6,9 +6,8 @@ from order.models import Order, OrderItem
 # Register your models here
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    exclude = ['total_order_item_prices', 'is_paid']
+    exclude = ['total_order_item_prices']  # , 'is_paid']
     list_display = ['id', 'customer', 'is_paid', 'total_order_item_prices']
-
 
 
 @admin.register(OrderItem)

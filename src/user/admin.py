@@ -5,7 +5,7 @@ from . import models
 @admin.register(models.User)
 class UserAdmin(admin.ModelAdmin):
     list_display = ['username', 'is_staff', 'is_superuser']
-    ordering = ('-created_at',)
+    ordering = ('-date_joined',)
     fieldsets = (
         (None, {'fields': ('email', 'username', 'first_name', 'password')}),
         ('Permissions', {'fields': ('is_staff', 'is_active')}),

@@ -117,12 +117,12 @@
                                 <li><a class="dropdown-item" href="#">Profile</a></li>
                                 <li><a class="dropdown-item" href="">Change password</a></li>
                                 <li>
-                                    <a class="dropdown-item" href="{% url 'customer-logout' %}">Log Out</a>
+                                    <a class="dropdown-item" href="{% url 'accounts:logout' %}">Log Out</a>
                                 </li>
                             </ul>
                         </div>
                     {% else %}
-                        <a href="{% url 'customer-login' %}"
+                        <a href="{% url 'accounts:login' %}"
                            class="order_online text-primary rounded-pill font-weight-bold">
                             Login
                         </a>
@@ -134,11 +134,3 @@
 </header>
 
 
-{% if request.user.is_authenticated %}
-                        <li><a href="#">{{request.user.username}}</a></li>
-                        <li><a href="{% url 'accounts:logout' %}%">Log out</a></li>
-                        {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'accounts:login' %}">Login</a>
-                        </li>
-                        {% endif %}

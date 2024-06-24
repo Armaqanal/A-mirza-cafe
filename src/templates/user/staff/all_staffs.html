@@ -24,16 +24,22 @@
                 {% for staff in all_staffs %}
                     <div class="col-3 mb-3">
                         <div class="card" style="height: 400px">
-                            <div class="rounded-top" style="height:120px; width: 100%; background-color: {{ colors|random }}"></div>
+                            <div class="rounded-top"
+                                 style="height:120px; width: 100%; background-color: {{ colors|random }}"></div>
                             <div class="card-body text-center">
                                 <a href="{% url 'staff-profile' staff.username %}">
-                                    <img src="{{ staff.photo.url }}"
-                                         style="width:100px;margin-top:-65px" alt="User"
-                                         class="img-fluid img-thumbnail rounded-circle border-0 mb-3">
+                                    {% if staff.photo %}
+                                        <img src="{{ staff.photo.url }}"
+                                             style="width:100px;margin-top:-65px" alt="User"
+                                             class="img-fluid img-thumbnail rounded-circle border-0 mb-3">
+                                    {% else %}
+                                        <img src="{% static 'user/images/default_profile_photo.png' %}"
+                                             style="width:100px;margin-top:-65px" alt="User"
+                                             class="img-fluid img-thumbnail rounded-circle border-0 mb-3">
+                                    {% endif %}
                                 </a>
                                 <h5 class="card-title">{{ staff.username }}</h5>
-                                <p class="text-secondary mb-1">Full Stack Developer</p>
-                                <p class="text-muted font-size-sm">Bay Area, San Francisco, CA</p>
+                                <p class="text-secondary mb-1">Role: {{ staff.role|title }}</p>
                             </div>
                             <div class="card-footer d-flex flex-row">
                                 <button class="btn btn-light btn-sm bg-white has-icon btn-block" type="button"><i

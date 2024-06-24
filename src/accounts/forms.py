@@ -1,10 +1,16 @@
 from django.contrib.auth import get_user_model
-from django.forms import forms
+from django import forms
+
+#
+# class UserLoginForm(forms.ModelForm):
+#     class Meta:
+#         model = get_user_model()
+#         fields = ("username", "password")
+#         widgets = {
+#             "password": forms.PasswordInput(), }
+# authentication/forms.py
 
 
-class UserLoginForm(forms.ModelForm):
-    class Meta:
-        model = get_user_model()
-        fields = ("username", "password")
-        widgets = {
-            "password": forms.PasswordInput(), }
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length=63)
+    password = forms.CharField(max_length=63, widget=forms.PasswordInput)

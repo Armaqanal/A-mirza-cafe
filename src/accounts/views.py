@@ -6,7 +6,7 @@ from . import forms
 
 
 def login_view(request):
-    form = forms.LoginForm()
+    # form = forms.LoginForm()
     if request.method == 'POST':
         form = forms.LoginForm(request.POST)
         if form.is_valid():
@@ -20,7 +20,7 @@ def login_view(request):
             else:
                 return HttpResponse('invalid login')
     return render(
-        request, 'accounts/login.html', context={'form': form})
+        request, 'accounts/login.html')  #context={'form': form})
 
 
 def logout_view(request):

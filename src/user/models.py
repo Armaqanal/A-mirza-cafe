@@ -1,12 +1,11 @@
 import os
-from django.db.models.signals import pre_save, post_delete
-from django.dispatch import receiver
-from django.contrib.auth.validators import UnicodeUsernameValidator
+from pathlib import Path
+
+from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
-from django.contrib.auth import password_validation
-from django.contrib.auth.hashers import make_password
-from pathlib import Path
+from django.db.models.signals import pre_save, post_delete
+from django.dispatch import receiver
 
 
 class DateFieldsMixin(models.Model):
@@ -17,48 +16,29 @@ class DateFieldsMixin(models.Model):
         abstract = True
 
 
-class Person(DateFieldsMixin, models.Model):
+class User(AbstractUser):
     def profile_image_upload_to(instance, filename):
         extension = Path(filename).suffix
         return f'profile_photos/{instance.__class__.__name__.lower()}/{instance.username}{extension}'
 
-    # validators
-    username_validator = UnicodeUsernameValidator()
     phone_regex = RegexValidator(regex='^(\\+98|0)?9\\d{9}$', message='Invalid phone number!')  # TODO: proper message
 
-    username = models.CharField(
-        "username",
-        max_length=150,
-        unique=True,
-        help_text="Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.",
-        validators=[username_validator],
-        error_messages={"unique": "A user with that username already exists."},
-    )
-    password = models.CharField(max_length=128, validators=[password_validation.validate_password])
-    first_name = models.CharField(max_length=150, blank=True)
-    last_name = models.CharField(max_length=150, blank=True)
     photo = models.ImageField(
         upload_to=profile_image_upload_to,
-        default='profile_photos/default_profile_photo.png',
+        null=True,
         blank=True
     )
-    phone = models.CharField(max_length=40, validators=[phone_regex])
-    email = models.EmailField()
+    phone = models.CharField(max_length=40, validators=[phone_regex], blank=True)
     address = models.TextField(null=True, blank=True)
-    is_active = models.BooleanField(default=True)
+    date_modified = models.DateTimeField(auto_now=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        self.password = make_password(self.password)
-        super().save()
+    REQUIRED_FIELDS = []
 
-    def __str__(self):
-        return self.username
-
-    class Meta:
-        abstract = True
+    # AbstractBaseUser model's __str__ method returns 'username'
 
 
-class Staff(Person):
+class Staff(User):
     class RoleType(models.TextChoices):
         MANAGER = 'manager', 'manager'
         BARISTA = 'barista', 'barista'
@@ -68,25 +48,37 @@ class Staff(Person):
     salary = models.IntegerField(default=0, blank=False)
     role = models.CharField(max_length=25, choices=RoleType.choices, default=RoleType.BARISTA)
 
+    class Meta:
+        verbose_name = 'staff'
+        verbose_name_plural = 'staffs'
 
-class Customer(Person):
+    def save(self):
+        self.is_staff = True
+        super().save()
+
+
+class Customer(User):
     balance = models.IntegerField(default=0, blank=False)
 
+    class Meta:
+        verbose_name = 'customer'
+        verbose_name_plural = 'customers'
 
-@receiver(post_delete, sender=Person)
-def delete_customer_profile_photo(sender, instance: Person, **kwargs):
+
+@receiver(post_delete, sender=User)
+def delete_customer_profile_photo(sender, instance: User, **kwargs):
     if instance.photo:
         if os.path.isfile(instance.photo.path):
             os.remove(instance.photo.path)
 
 
-@receiver(pre_save, sender=Person)
-def delete_old_customer_profile_photo(sender, instance: Person, **kwargs):
+@receiver(pre_save, sender=User)
+def delete_old_customer_profile_photo(sender, instance: User, **kwargs):
     if not instance.id:
         return False
 
     try:
-        old_person = Person.objects.get(id=instance.id)
+        old_person = User.objects.get(id=instance.id)
     except Customer.DoesNotExist:
         return False
 

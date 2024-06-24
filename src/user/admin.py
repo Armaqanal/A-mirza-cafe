@@ -1,30 +1,25 @@
 from django.contrib import admin
-from django.urls import reverse
-from django.utils.html import format_html
 from . import models
 
-# admin.site.register(models.Customer)
+
+@admin.register(models.User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ['username', 'is_staff', 'is_superuser']
+
 
 @admin.register(models.Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    date_hierarchy = "created_at"
-    list_display = ["id", "username", "photo"]
+    date_hierarchy = "date_joined"
+    list_display = ["username", "id", "photo"]
+
+    fields = ['username', 'password', 'first_name', 'last_name', 'email',
+              'photo', 'phone', 'address', 'balance', 'is_active']
+
 
 @admin.register(models.Staff)
 class StaffAdmin(admin.ModelAdmin):
-    date_hierarchy = "created_at"
-    list_display = ["id", "username", "photo", "edit_record"]
-    list_display_links = ["username"]
-    list_filter = ["username"]
-    search_fields = ["username", "first_name", "last_name"]
-    empty_value_field = "N/A"
-    # ordering = ["id"]
+    date_hierarchy = "date_joined"
 
-    def edit_record(self, obj):
-        return format_html("<a href={}>{}</a>", reverse("admin:user_staff_change", args=[obj.id]), 'edit')
-
-    edit_record.short_description = 'edit'
-    edit_record.admin_order_field = ['id']
-
-
-
+    fields = ['username', 'password', 'first_name', 'last_name', 'email',
+              'photo', 'phone', 'address', 'salary', 'role', 'is_active']
+    readonly_fields = ['is_active']

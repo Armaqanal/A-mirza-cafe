@@ -1,9 +1,11 @@
 import os
 import random
+import faker
 
 from django.shortcuts import render, redirect
 
 from .models import MenuCategory, MenuItem
+from user.models import Staff, Customer
 
 
 def home(request):
@@ -38,6 +40,14 @@ def menu(request, selected_category=None):
 
 
 LABEL_LIST = ['Iced Coffee', 'Hot Coffee', 'Fruit Juice', 'Burger', 'Pizza', 'Pasta', 'Fries']
+
+
+def mock_all(request):
+    mock_customers(request)
+    mock_staffs(request)
+    mock_menu_category(request)
+    mock_menu_item(request)
+    return redirect('website-home')
 
 
 def mock_menu_category(request):
@@ -78,18 +88,94 @@ def mock_menu_item(request):
     return redirect('menu', 'all')
 
 
-def remove_all_menu_items(request):
-    for item in MenuItem.objects.all():
-        item.delete()
+def mock_staffs(request, count=5):
+    print('*' * 50, 'staff')
+    valid_phone_list = ['09318923823', '09231802829', '09123334433']
+    f = faker.Faker()
+    photos_dir = "static/user/images/profile-photo-samples/"
+    photo_list = os.listdir(photos_dir)
+    for _ in range(count):
+        new_staff = Staff(
+            username=f.user_name(),
+            password=f.password(),
+            first_name=f.first_name(),
+            last_name=f.last_name(),
+            phone=random.choice(valid_phone_list),
+            email=f.email(),
+            address=f.address(),
+            is_active=random.choice([True, False]),
+            salary=1800,
+            role=random.choice([choice_tuple[0] for choice_tuple in Staff.RoleType.choices]),
+        )
+        selected_photo = random.choice(photo_list)
+        resource_photo_path = photos_dir + selected_photo
+        with open(resource_photo_path, 'rb') as f_resource:
+            target_photo_path = f'media/profile_photos/staff/{selected_photo}'
+            os.makedirs(target_photo_path.removesuffix(selected_photo), exist_ok=True)
+            with open(target_photo_path, 'wb') as f_target:
+                f_target.write(f_resource.read())
 
-    return redirect('menu', 'all')
+        new_staff.photo = target_photo_path.removeprefix('media/')
+        new_staff.save()
+    return redirect('all-staffs')
+
+
+def mock_customers(request, count=5):
+    valid_phone_list = ['09318923823', '09231802829', '09123334433']
+    f = faker.Faker()
+    photos_dir = "static/user/images/profile-photo-samples/"
+    photo_list = os.listdir(photos_dir)
+    for _ in range(count):
+        new_customer = Customer(
+            username=f.user_name(),
+            password=f.password(),
+            first_name=f.first_name(),
+            last_name=f.last_name(),
+            phone=random.choice(valid_phone_list),
+            email=f.email(),
+            address=f.address(),
+            is_active=random.choice([True, False]),
+            balance=180,
+        )
+        selected_photo = random.choice(photo_list)
+        resource_photo_path = photos_dir + selected_photo
+        with open(resource_photo_path, 'rb') as f_resource:
+            target_photo_path = f'media/profile_photos/customer/{selected_photo}'
+            os.makedirs(target_photo_path.removesuffix(selected_photo), exist_ok=True)
+            with open(target_photo_path, 'wb') as f_target:
+                f_target.write(f_resource.read())
+
+        new_customer.photo = target_photo_path.removeprefix('media/')
+        new_customer.save()
+    return redirect('all-customers')
+
+
+def remove_all_records(model, *args, redirect_to='website-home'):
+    for model_obj in model.objects.all():
+        model_obj.delete()
+    return redirect(redirect_to, *args)
+
+
+def remove_all(request):
+    remove_all_staffs(request)
+    remove_all_customers(request)
+    remove_all_menu_items(request)
+    return remove_all_categories(request)
+
+
+def remove_all_menu_items(request):
+    return remove_all_records(MenuItem)
 
 
 def remove_all_categories(request):
-    for cat in MenuCategory.objects.all():
-        cat.delete()
+    return remove_all_records(MenuCategory)
 
-    return redirect('menu', 'all')
 
+def remove_all_staffs(request):
+    return remove_all_records(Staff)
+
+
+def remove_all_customers(request):
+    return remove_all_records(Customer)
 # TODO: View to show recent restaurants
 # TODO: View for food party

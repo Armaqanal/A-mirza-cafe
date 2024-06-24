@@ -52,7 +52,7 @@ class Staff(User):
         verbose_name = 'staff'
         verbose_name_plural = 'staffs'
 
-    def save(self):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.is_staff = True
         super().save()
 

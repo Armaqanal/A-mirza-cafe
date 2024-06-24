@@ -36,6 +36,6 @@ def submit_order(request, selected_category=None, menu_item_id=None):
     # check if this item has been already selected for the 'unpaid_order',
     # if it exits get it and if it doesn't create it
     order_item = OrderItem.objects.filter(order=unpaid_order).get_or_create(menu_item=selected_menu_item,
-                                                                            order=unpaid_order, quantity=1).
+                                                                            order=unpaid_order, quantity=1)
 
     return redirect('menu', selected_category)

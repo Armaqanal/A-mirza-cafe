@@ -1,0 +1,7 @@
+#++++++++++++++++++++++++++TEST USER MODEL+++++++++++++++++++++
+user=User.objects.create_user(username='s1',email='s1@gmail.com',password='123vhdjh',phone='09193535442')
+staff=Staff.objects.create(user=user,salary=50000,role=Staff.RoleType.BARISTA)
+customer=Customer.objects.create(user=user,balance=1000)
+
+customer.save()
+staff.save()

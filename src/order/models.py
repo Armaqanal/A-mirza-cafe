@@ -6,11 +6,12 @@ from django.dispatch import receiver
 from user.models import Customer, DateFieldsMixin
 
 from menu.models import MenuItem
+from django.conf import settings
 
 
 class Order(DateFieldsMixin, models.Model):
     total_order_item_prices = models.PositiveIntegerField(default=0)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     is_paid = models.BooleanField(default=False)
 
     def calculate_total_order_item_price(self):

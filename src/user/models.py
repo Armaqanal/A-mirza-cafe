@@ -1,12 +1,33 @@
 import os
-from django.db.models.signals import pre_save, post_delete
+
+from django.conf import settings
+from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.models import AbstractUser
+from django.db.models.signals import pre_save, post_delete, post_save
 from django.dispatch import receiver
-from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.validators import RegexValidator
 from django.db import models
-from django.contrib.auth import password_validation
-from django.contrib.auth.hashers import make_password
 from pathlib import Path
+
+
+class UserManager(BaseUserManager):
+    def create_user(self, username, email, password=None, **extra_fields):
+        if not username:
+            raise ValueError('Users must have a username')
+        email = self.normalize_email(email)
+        user = self.model(username=username, email=email, **extra_fields)
+        user.set_password(password)
+        user.save()
+        return user
+
+    def create_superuser(self, username, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True')
+        return self.create_user(username, email, password, **extra_fields)
 
 
 class DateFieldsMixin(models.Model):
@@ -17,48 +38,42 @@ class DateFieldsMixin(models.Model):
         abstract = True
 
 
-class Person(DateFieldsMixin, models.Model):
+class User(AbstractUser, DateFieldsMixin):
     def profile_image_upload_to(instance, filename):
         extension = Path(filename).suffix
         return f'profile_photos/{instance.__class__.__name__.lower()}/{instance.username}{extension}'
 
     # validators
-    username_validator = UnicodeUsernameValidator()
-    phone_regex = RegexValidator(regex='^(\\+98|0)?9\\d{9}$', message='Invalid phone number!')  # TODO: proper message
-
-    username = models.CharField(
-        "username",
-        max_length=150,
-        unique=True,
-        help_text="Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.",
-        validators=[username_validator],
-        error_messages={"unique": "A user with that username already exists."},
+    phone_regex = RegexValidator(
+        regex='^(\\+98|0)?9\\d{9}$',
+        message='Invalid phone number! Format: +989123456789 or 09123456789'
     )
-    password = models.CharField(max_length=128, validators=[password_validation.validate_password])
-    first_name = models.CharField(max_length=150, blank=True)
-    last_name = models.CharField(max_length=150, blank=True)
+    username = models.CharField(max_length=150, unique=True)
+    email = models.EmailField(null=True, blank=True)
+    phone = models.CharField(max_length=40, validators=[phone_regex])
+    address = models.TextField(null=True, blank=True)
     photo = models.ImageField(
         upload_to=profile_image_upload_to,
         default='profile_photos/default_profile_photo.png',
         blank=True
     )
-    phone = models.CharField(max_length=40, validators=[phone_regex])
-    email = models.EmailField()
-    address = models.TextField(null=True, blank=True)
-    is_active = models.BooleanField(default=True)
+    objects = UserManager()
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        self.password = make_password(self.password)
-        super().save()
+    def save(self, *args, **kwargs):
+        if self.is_superuser:
+            self.is_staff = True
+        return super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.username
-
-    class Meta:
-        abstract = True
+        return f"{self.username}"
 
 
-class Staff(Person):
+class Staff(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='staff',
+                                primary_key=True)
+
+    # Other fields
+
     class RoleType(models.TextChoices):
         MANAGER = 'manager', 'manager'
         BARISTA = 'barista', 'barista'
@@ -68,25 +83,32 @@ class Staff(Person):
     salary = models.IntegerField(default=0, blank=False)
     role = models.CharField(max_length=25, choices=RoleType.choices, default=RoleType.BARISTA)
 
+    def save(self, *args, **kwargs):
+        self.user.is_staff = True
+        self.user.save()
+        super().save(*args, **kwargs)
 
-class Customer(Person):
+
+class Customer(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='customer',
+                                primary_key=True)
     balance = models.IntegerField(default=0, blank=False)
 
 
-@receiver(post_delete, sender=Person)
-def delete_customer_profile_photo(sender, instance: Person, **kwargs):
+@receiver(post_delete, sender=User)
+def delete_customer_profile_photo(sender, instance: User, **kwargs):
     if instance.photo:
         if os.path.isfile(instance.photo.path):
             os.remove(instance.photo.path)
 
 
-@receiver(pre_save, sender=Person)
-def delete_old_customer_profile_photo(sender, instance: Person, **kwargs):
+@receiver(pre_save, sender=User)
+def delete_old_customer_profile_photo(sender, instance: User, **kwargs):
     if not instance.id:
         return False
 
     try:
-        old_person = Person.objects.get(id=instance.id)
+        old_person = User.objects.get(id=instance.id)
     except Customer.DoesNotExist:
         return False
 

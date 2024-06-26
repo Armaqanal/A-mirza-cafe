@@ -41,6 +41,34 @@ def add_menu_item_to_cart(request, selected_category=None, menu_item_id=None):
     return redirect('menu', selected_category)
 
 
+# def add_menu_item_to_cart(request, selected_category=None, menu_item_id=None):
+#     print(request.COOKIES.get('username'), selected_category, menu_item_id)
+#
+#     username = request.session.get('username')
+#     customer = get_object_or_404(Customer, username=username)
+#
+#     selected_menu_item = MenuItem.objects.get(id=menu_item_id)
+#     print(selected_menu_item)
+#
+#     # Find the online customer
+#     online_customer = Customer.objects.get(is_online=True)
+#
+#     # Find the  online unpaid order
+#     unpaid_order = Order.objects.filter(customer=online_customer, is_paid=False).first()
+#
+#     order_item, created = OrderItem.objects.get_or_create(
+#         order=unpaid_order,
+#         menu_item=selected_menu_item,
+#         defaults={'quantity': 1}
+#     )
+#
+#     if not created:
+#         order_item.quantity += 1
+#         order_item.save()
+#
+#     return redirect('menu', selected_category)
+
+
 def customer_orders_view(request):
     customer_id = request.session.get('customer_id')
     customer_orders = Order.objects.filter(customer_id=customer_id).annotate(

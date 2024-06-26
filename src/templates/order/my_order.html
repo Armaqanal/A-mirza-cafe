@@ -1,0 +1,23 @@
+{% load crispy_forms_tags %}
+
+{% block content %}
+      <link rel="stylesheet" href="{% static 'order/css/order.css' %}">
+{% endblock css %}
+  <h2  align="center">
+      Finalize Your Order :
+  </h2>
+  <form action="{% url 'customer_order' selected_category %}" method="get">
+    {{ form|crispy }}
+  </form>
+
+  <h3>Order Summary</h3>
+  <ul>
+    {% for item in cart.items %}
+      <li>
+        {{ item.product.name }} ({{ item.quantity }}) - {{ item.total_price }}
+      </li>
+    {% endfor %}
+  </ul>
+  <p>Total: {{ cart.total }}</p>
+    <input type="submit" value="Place Order">
+{% endblock %}

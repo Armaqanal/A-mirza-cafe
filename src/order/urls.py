@@ -9,4 +9,5 @@ urlpatterns = [
          name='add-menu-item-to-cart'
          ),
     path('customer/orders/', views.customer_orders_view, name='customer_orders'),
+
 ]

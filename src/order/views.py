@@ -21,7 +21,7 @@ def order(request):
     return render(request, 'order/order.html', {})
 
 
-def submit_order(request, selected_category=None, menu_item_id=None):
+def add_menu_item_to_cart(request, selected_category=None, menu_item_id=None):
     print(request.COOKIES.get('username'), selected_category, menu_item_id)
     username = request.COOKIES.get('username')
     customer = get_object_or_404(Customer, username=username)

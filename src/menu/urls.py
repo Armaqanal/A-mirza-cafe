@@ -21,5 +21,15 @@ urlpatterns = [
     path('remove/menu/', views.remove_all_menu_items, name='remove-all-menu-items'),
     path('remove/staff/', views.remove_all_staffs, name='remove-all-staffs'),
     path('remove/customer/', views.remove_all_customers, name='remove-all-customers'),
-    path('profile/', views.profile, name='profile')
+
+    path('profile/', views.profile, name='profile'),
+    path('history/', views.order_history, name='history'),
+
+
+    # staff_add_part
+
+    path('add_category/', views.staff_add_category, name='add_menu_categories'),
+    path('add_item/', views.add_menu_item, name='add_menu_item'),
+    path('manage_menu/', views.manage_view, name='manage'),
 ]
+

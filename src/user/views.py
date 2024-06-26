@@ -1,17 +1,8 @@
 import datetime
 
-from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 
 from .models import Customer, Staff
-
-from django.contrib.auth.decorators import login_required
-
-# from menu.models import MenuCategory
-from .forms import AddCategoryForm, AddMenuItem
-from menu.models import MenuCategory
-
-from menu.models import MenuItem
 
 
 def staff_profile(request, staff_username):
@@ -57,7 +48,6 @@ def all_customers_view(request):
         "colors": colors
     }
     return render(request, 'user/customer/all_customers.html', context)
-
 
 @login_required
 def staff_menu_categories(request):

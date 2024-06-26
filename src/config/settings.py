@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'user',
     'accounts'
 ]
-AUTH_USER_MODEL = 'user.User'
 
 MIDDLEWARE = [
     # django-debug-toolbar

@@ -1,8 +1,9 @@
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.conf import settings
+from django.core.validators import MaxValueValidator
 from django.db import models
 from django.db.models import Sum
-from user.models import Customer, DateFieldsMixin
 from menu.models import MenuItem
+from user.models import DateFieldsMixin, Customer
 
 
 class Order(DateFieldsMixin, models.Model):
@@ -16,7 +17,6 @@ class Order(DateFieldsMixin, models.Model):
     @classmethod
     def get_unpaid_order(cls, customer_id=61):
         """"""
-        # customer = Customer.objects.get(pk=customer_id)
         last_unpaid_order, new_unpaid_order = cls.objects.get_or_create(customer_id=customer_id, is_paid=False)
         return last_unpaid_order or new_unpaid_order
 
@@ -47,7 +47,3 @@ class OrderItem(DateFieldsMixin, models.Model):
         self.total_discounted_price = self.quantity * self.discounted_price
         super().save(*args, **kwargs)
         self.order.save()
-
-
-
-

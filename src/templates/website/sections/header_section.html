@@ -26,21 +26,35 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'website-about' %}">About</a>
                     </li>
+                    {% if request.user.is_staff %}
+                        <li class="nav-item dropdown">
+                        <button class="btn  dropdown-toggle text-white" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                            MANAGE
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li><a class="dropdown-item" href="#">Orders</a></li>
+                            <li><a class="dropdown-item" href="#">Menu</a></li>
+                        </ul>
+                    {% endif %}
                 </ul>
                 <div class="user_option">
-                    <a class="staff_link" href="{% url 'all-staffs' %}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 48 48">
-                            <g fill="currentColor">
-                                <path d="M17 31v-2h2v2z"/>
-                                <path fill-rule="evenodd"
-                                      d="M20 4a3 3 0 0 0-3 3h-4a3 3 0 0 0-3 3v31a3 3 0 0 0 3 3h22a3 3 0 0 0 3-3V10a3 3 0 0 0-3-3h-4a3 3 0 0 0-3-3zm-1 3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-8a1 1 0 0 1-1-1zm-3 13a1 1 0 1 0 0 2h7a1 1 0 1 0 0-2zm-1-4a1 1 0 0 1 1-1h15.5a1 1 0 1 1 0 2H16a1 1 0 0 1-1-1m0 12a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1zm13 4a3 3 0 1 0 0-6a3 3 0 1 0 0 6m-6 4.5c0-2.116 3.997-3.182 6-3.182s6 1.066 6 3.182V39H22z"
-                                      clip-rule="evenodd"/>
-                            </g>
-                        </svg>
-                    </a>
-                    <a class="customer_link" href="{% url 'all-customers' %}">
-                        <i class="fa fa-user" aria-hidden="true"></i>
-                    </a>
+                    {% if request.user.is_staff %}
+                        <a class="staff_link" href="{% url 'all-staffs' %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 48 48">
+                                <g fill="currentColor">
+                                    <path d="M17 31v-2h2v2z"/>
+                                    <path fill-rule="evenodd"
+                                          d="M20 4a3 3 0 0 0-3 3h-4a3 3 0 0 0-3 3v31a3 3 0 0 0 3 3h22a3 3 0 0 0 3-3V10a3 3 0 0 0-3-3h-4a3 3 0 0 0-3-3zm-1 3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-8a1 1 0 0 1-1-1zm-3 13a1 1 0 1 0 0 2h7a1 1 0 1 0 0-2zm-1-4a1 1 0 0 1 1-1h15.5a1 1 0 1 1 0 2H16a1 1 0 0 1-1-1m0 12a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1zm13 4a3 3 0 1 0 0-6a3 3 0 1 0 0 6m-6 4.5c0-2.116 3.997-3.182 6-3.182s6 1.066 6 3.182V39H22z"
+                                          clip-rule="evenodd"/>
+                                </g>
+                            </svg>
+                        </a>
+                        <a class="customer_link" href="{% url 'all-customers' %}">
+                            <i class="fa fa-user" aria-hidden="true"></i>
+                        </a>
+
+                    {% endif %}
                     <a class="cart_link" href="{% url 'cart' %}">
                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                              xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 456.029 456.029"
@@ -99,23 +113,22 @@
                     </a>
                     {% if request.user.is_authenticated %}
 
-                        <div class="btn-group">
+                        <div class="btn-group ">
                             <button type="button"
                                     class="btn  dropdown-toggle text-primary rounded font-weight-bold"
                                     data-bs-toggle="dropdown"
                                     aria-expanded="false" style="background-color: #ffbe33">
-                                <div>
                                     <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16"
                                          focusable="false" class="chakra-icon css-ar-i1hv63" height="1em" width="1em"
                                          xmlns="http://www.w3.org/2000/svg">
                                         <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
                                     </svg>
                                     {{ request.user.username }}
-                                </div>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-dark ">
                                 <li><a class="dropdown-item" href="#">Profile</a></li>
                                 <li><a class="dropdown-item" href="">Change password</a></li>
+                                <li><a class="dropdown-item" href="#">My Orders</a></li>
                                 <li>
                                     <a class="dropdown-item" href="{% url 'accounts:logout' %}">Log Out</a>
                                 </li>

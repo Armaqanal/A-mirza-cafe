@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from django.contrib.auth.hashers import make_password, is_password_usable
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
@@ -36,6 +37,13 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     # AbstractBaseUser model's __str__ method returns 'username'
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not is_password_usable(self.password) or not self.password.startswith('pbkdf2_sha256$'):
+            # if self.pk is None:
+            # if not is_password_usable(self.password):
+            '''age password hash nashode bia hash kon'''
+            self.password = make_password(self.password)
+        super().save(force_insert, force_update, using, update_fields)
 
 
 class Staff(User):

@@ -6,10 +6,10 @@ from . import models
 class UserAdmin(admin.ModelAdmin):
     list_display = ['username', 'is_staff', 'is_superuser']
     ordering = ('-date_joined',)
-    fieldsets = (
-        (None, {'fields': ('email', 'username', 'first_name', 'password')}),
-        ('Permissions', {'fields': ('is_staff', 'is_active')}),
-    )
+    # fieldsets = (
+    #     (None, {'fields': ('email', 'username', 'first_name', 'password')}),
+    #     ('Permissions', {'fields': ('is_staff', 'is_active')}),
+    # )
 
 
 @admin.register(models.Customer)

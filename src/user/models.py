@@ -87,3 +87,4 @@ def delete_old_customer_profile_photo(sender, instance: User, **kwargs):
     if old_person.photo:
         if os.path.isfile(old_person.photo.path):
             os.remove(old_person.photo.path)
+

@@ -1,0 +1,13 @@
+{% extends 'website/base.html' %}
+
+{% block content %}
+    {% for order in orders %}
+        <ul>
+            <li>discounted_price : {{ order_item.discounted_price }}</li>
+            <li>quantity : {{ order_item.quantity }}</li>
+            <li>total_price : {{ order_item.total_price }}</li>
+            <li>menu_item_id : {{ order_item.menu_item_id }}</li>
+            <li>order_id : {{ order_item.order_id }}</li>
+        </ul>
+    {% endfor %}
+{% endblock content %}

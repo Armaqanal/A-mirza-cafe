@@ -48,3 +48,4 @@ def all_customers_view(request):
         "colors": colors
     }
     return render(request, 'user/customer/all_customers.html', context)
+

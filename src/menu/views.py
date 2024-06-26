@@ -2,7 +2,7 @@ import os
 import random
 import faker
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from .models import MenuCategory, MenuItem
 from user.models import Staff, Customer
@@ -179,3 +179,19 @@ def remove_all_customers(request):
     return remove_all_records(Customer)
 # TODO: View to show recent restaurants
 # TODO: View for food party
+
+
+# def profile(request):
+#     if 'username' in request.session:
+#         username = request.session['username']
+#         customer = username.objects.get(username=username)
+#         context = {'customer': customer}
+#         return render(request, 'user/customer/customer_profile.html', context)
+#     else:
+#         return redirect('login')
+
+def profile(request):
+    username = request.COOKIES.get('username')
+    customer = Customer.objects.get(username=username)
+    context = {'customer': customer}
+    return render(request, 'user/customer/customer_profile.html', context)

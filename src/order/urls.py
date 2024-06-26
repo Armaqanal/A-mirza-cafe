@@ -8,4 +8,5 @@ urlpatterns = [
          views.submit_order,
          name='submit-order'
          ),
+    path('customer/orders/', views.customer_orders_view, name='customer_orders'),
 ]

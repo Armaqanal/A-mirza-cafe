@@ -1,9 +1,9 @@
 import datetime
 
+from django.db.models import Count, Sum
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Order, OrderItem
 from user.models import Customer
-
 from menu.models import MenuItem
 
 
@@ -39,3 +39,21 @@ def submit_order(request, selected_category=None, menu_item_id=None):
                                                                             order=unpaid_order, quantity=1)
 
     return redirect('menu', selected_category)
+
+
+def customer_orders_view(request):
+    customer_id = request.session.get('customer_id')
+    customer_orders = Order.objects.filter(customer_id=customer_id).annotate(
+        total_items=Count('items'),
+        total_amount=Sum('item_price')
+    )
+    context = {
+        'customer_orders': customer_orders
+    }
+    return render(request, 'customer_orders.html', context)
+
+
+
+
+
+

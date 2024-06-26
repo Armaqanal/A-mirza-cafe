@@ -21,4 +21,5 @@ urlpatterns = [
     path('remove/menu/', views.remove_all_menu_items, name='remove-all-menu-items'),
     path('remove/staff/', views.remove_all_staffs, name='remove-all-staffs'),
     path('remove/customer/', views.remove_all_customers, name='remove-all-customers'),
+    path('profile/', views.profile, name='profile')
 ]

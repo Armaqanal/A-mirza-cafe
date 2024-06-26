@@ -8,4 +8,5 @@ urlpatterns = [
 
     path('staff/', views.all_staffs_view, name='all-staffs'),
     path('staff/<str:staff_username>/', views.staff_profile, name='staff-profile'),
+
 ]

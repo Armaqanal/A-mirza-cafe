@@ -1,7 +1,13 @@
 #++++++++++++++++++++++++++TEST USER MODEL+++++++++++++++++++++
-user=User.objects.create_user(username='s1',email='s1@gmail.com',password='123vhdjh',phone='09193535442')
-staff=Staff.objects.create(user=user,salary=50000,role=Staff.RoleType.BARISTA)
-customer=Customer.objects.create(user=user,balance=1000)
-
+customer=Customer.objects.create(username='try1', password='123', balance='13')
 customer.save()
+staff = Staff.objects.create(username='try2', password='123', salary=200, role='waiter')
 staff.save()
+
+
+#=========================Staff Permission============================
+>>> staff_user=User.objects.get(username='staffuser')
+>>> print(staff_user.is_staff)
+True
+>>> print(staff_user.has_perm('auth.view_user'))
+False

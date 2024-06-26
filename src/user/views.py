@@ -1,8 +1,17 @@
 import datetime
 
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 
 from .models import Customer, Staff
+
+from django.contrib.auth.decorators import login_required
+
+# from menu.models import MenuCategory
+from .forms import AddCategoryForm, AddMenuItem
+from menu.models import MenuCategory
+
+from menu.models import MenuItem
 
 
 def staff_profile(request, staff_username):
@@ -48,4 +57,50 @@ def all_customers_view(request):
         "colors": colors
     }
     return render(request, 'user/customer/all_customers.html', context)
+
+
+@login_required
+def staff_menu_categories(request):
+    if request.user.is_staff:
+        # return HttpResponse("Welcome, Staff User!")
+        # 1:See categories
+        # 2:Add categories
+        # 3:see Item
+        # 4:Add item
+        menu_categories = MenuCategory.objects.all()
+        if request.method == 'POST':
+            form = AddCategoryForm(request.POST)
+            if form.is_valid():
+                form.save()
+        else:
+            form = AddCategoryForm()
+        context = {
+            'form': form,
+            'menu_categories': menu_categories
+        }
+        return render(request, 'staff_menu_categories.html', context)
+
+    else:
+        return HttpResponse("Access denied.")
+
+
+@login_required
+def add_menu_item(request):
+    if request.user.is_staff:
+        menu_items = MenuItem.objects.all()
+        if request.method == 'POST':
+            form = AddMenuItem(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+        else:
+            form = AddMenuItem()
+        context = {
+            'form': form,
+            'menu_categories': menu_items
+        }
+        return render(request, 'add_menu_item.html', context)
+
+    else:
+        return HttpResponse("Access denied.")
+    # TODO:ACCESS DENIED PAGE FOR REDIRECT HOMEPAGE
 

@@ -5,3 +5,9 @@ staff = Staff.objects.create(username='try2', password='123', salary=200, role='
 staff.save()
 
 
+#=========================Staff Permission============================
+>>> staff_user=User.objects.get(username='staffuser')
+>>> print(staff_user.is_staff)
+True
+>>> print(staff_user.has_perm('auth.view_user'))
+False

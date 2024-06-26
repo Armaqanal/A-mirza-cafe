@@ -1,9 +1,12 @@
 import os
 import random
 import faker
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 
 from django.shortcuts import render, redirect
 
+from .forms import AddMenuItem, AddCategoryForm
 from .models import MenuCategory, MenuItem
 from user.models import Staff, Customer
 
@@ -177,5 +180,51 @@ def remove_all_staffs(request):
 
 def remove_all_customers(request):
     return remove_all_records(Customer)
+
+
 # TODO: View to show recent restaurants
 # TODO: View for food party
+
+@login_required
+def staff_add_category(request):
+    if request.user.is_staff:
+        menu_categories = MenuCategory.objects.all()
+        if request.method == 'POST':
+            form = AddCategoryForm(request.POST)
+            if form.is_valid():
+                form.save()
+        else:
+            form = AddCategoryForm()
+        context = {
+            'form': form,
+            'menu_categories': menu_categories
+        }
+        return render(request, 'menu/add_category.html', context)
+
+    else:
+        return HttpResponse("Access denied.")
+
+
+@login_required
+def add_menu_item(request):
+    if request.user.is_staff:
+        menu_items = MenuItem.objects.all()
+        if request.method == 'POST':
+            form = AddMenuItem(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+        else:
+            form = AddMenuItem()
+        context = {
+            'form': form,
+            'menu_categories': menu_items
+        }
+        return render(request, 'menu/add_item.html', context)
+
+    else:
+        return HttpResponse("Access denied.")
+    # TODO:ACCESS DENIED PAGE FOR REDIRECT HOMEPAGE
+
+
+def manage_view(request):
+    return render(request, 'menu/manage.html')

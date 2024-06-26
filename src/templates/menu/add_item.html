@@ -1,27 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Staff Menu Categories</title>
-</head>
-<body>
-<h1>Menu Categories</h1>
-<ul>
-    {% for category in menu_categories %}
-    <li>{{ category.label }}</li>
-    {% endfor %}
+{% extends 'website/base.html' %}
+{% load static %}
 
-</ul>
-<h1>
-    Add Category
-</h1>
-<form method="POST" action="">
-    {% csrf_token %}
-    {{ form.as_p}}
-    <button type="submit">Add Category</button>
-</form>
 
-<!--?second form-->
+{% block body %}
+<body class="sub_page">
+{% endblock body %}
+
+{% block slide-section %}
+{# DO NOT write anything in this block! #}
+{% endblock slide-section %}
+
+{% block content %}
 
 <h1>Menu Categories</h1>
 <ul>
@@ -44,5 +33,5 @@
     {{ form.as_p}}
     <button type="submit">Add Category</button>
 </form>
-</body>
-</html>
+
+{% endblock content %}

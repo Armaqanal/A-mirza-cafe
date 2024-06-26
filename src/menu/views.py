@@ -247,11 +247,12 @@ def add_menu_item(request):
 def manage_view(request):
     return render(request, 'menu/manage.html')
 
+
 def order_history(request):
     username = request.session.get('username')
-    customer = Customer.objects.get(username=username)['id']
-    orders = Order.objects.filter(customer=customer,is_paid=True).values()
-    context ={'orders': orders}
-    return render(request, 'order/order_history.html',context=context)
+    customer = Customer.objects.get(username=username)
+    orders = Order.objects.filter(customer=customer, is_paid=True).values()
+    context = {'orders': orders}
+    return render(request, 'order/order_history.html', context=context)
 
 

@@ -9,19 +9,21 @@
 {% block slide-section %}
     {# DO NOT write anything in this block! #}
 {% endblock slide-section %}
-<div class="container">
-  <div class="row">
-      {% for order in orders %}
-          <a href="#">
-              <div class="col">
-            <h2>
-              {{ order.created_at }}
-            </h2>
-                  <h3>
-                      ${{ order.total_order_item_prices  }}
-                  </h3>
-            </div>
-          </a>
-      {% endfor %}
-  </div>
-</div>
+{% block content %}
+    <div class="container">
+        <div class="row">
+            {% for order in orders %}
+                <a href="#">
+                    <div class="col">
+                        <h2>
+                            {{ order.created_at }}
+                        </h2>
+                        <h3>
+                            ${{ order.total_order_item_prices }}
+                        </h3>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock content %}

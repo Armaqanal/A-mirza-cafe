@@ -19,6 +19,7 @@ def login_view(request):
             )
             if user is not None:
                 login(request, user)
+                request.session['username'] = user.username
 
                 response = redirect('website-home')
                 response.set_cookie(

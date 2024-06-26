@@ -1,7 +1,8 @@
 import datetime
 
-from django.shortcuts import render, get_object_or_404
-
+from django.shortcuts import render, get_object_or_404, HttpResponse
+from menu.models import MenuItem, MenuCategory
+from menu.forms import  AddMenuItem, AddCategoryForm
 from .models import Customer, Staff
 
 
@@ -49,7 +50,7 @@ def all_customers_view(request):
     }
     return render(request, 'user/customer/all_customers.html', context)
 
-@login_required
+
 def staff_menu_categories(request):
     if request.user.is_staff:
         # return HttpResponse("Welcome, Staff User!")
@@ -74,7 +75,6 @@ def staff_menu_categories(request):
         return HttpResponse("Access denied.")
 
 
-@login_required
 def add_menu_item(request):
     if request.user.is_staff:
         menu_items = MenuItem.objects.all()

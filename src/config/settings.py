@@ -39,6 +39,8 @@ INSTALLED_APPS = [
 
     # 3rd party apps
     "debug_toolbar",  # django-debug-toolbar
+    "crispy_forms",
+    "crispy_bootstrap4",
 
     # my apps
     'menu',
@@ -140,3 +142,4 @@ INTERNAL_IPS = [
 ]
 
 AUTH_USER_MODEL = "user.User"
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

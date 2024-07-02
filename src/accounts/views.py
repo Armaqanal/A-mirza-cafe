@@ -1,9 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from user.models import Customer
+# from user.models import Customer
 from . import forms
-from forms import UserLoginForm
 
 
 def login_view(request):
@@ -47,7 +46,7 @@ def signup_view(request):
 
 def user_login_view(request):
     if request.method == 'POST':
-        form = UserLoginForm(request.POST)
+        form = forms.LoginForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
             phone_number = form.cleaned_data['phone_number']
@@ -57,5 +56,5 @@ def user_login_view(request):
                 login(request, user)
                 return redirect('website_home')
     else:
-        form = UserLoginForm()
+        form = forms.LoginForm()
     return render(request, 'accounts/user_login.html', {'form': form})

@@ -20,16 +20,16 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
-    email = models.EmailField(verbose_name="email", max_length=60, unique=True)
-    phone_number = models.CharField(verbose_name="phone number", max_length=50, unique=True)
+    email = models.EmailField(verbose_name="email", max_length=60, unique=True, blank=True)
+    phone_number = models.CharField(verbose_name="phone number", max_length=50, unique=True, blank=False)
     password = models.CharField(verbose_name="password", max_length=60)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['phone_number']
+    USERNAME_FIELD = 'phone_number'
+    REQUIRED_FIELDS = ['email']
 
     objects = UserManager()
 
     def __str__(self):
-        return self.phone_number
+        return self.email

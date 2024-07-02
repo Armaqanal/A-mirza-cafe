@@ -143,3 +143,7 @@ INTERNAL_IPS = [
 
 AUTH_USER_MODEL = "user.User"
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'accounts.auth_backends.AMirzaBackend',
+]

@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'user',
     'accounts'
 ]
+AUTH_USER_MODEL = "accounts.User"
+ACCOUNT_USER_MODEL_USERNAME_FIELD = "phone_number"
 
 MIDDLEWARE = [
     # django-debug-toolbar
@@ -140,5 +142,6 @@ INTERNAL_IPS = [
 ]
 
 AUTH_USER_MODEL = "user.User"
+
 
 

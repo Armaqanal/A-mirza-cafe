@@ -21,7 +21,7 @@
                         <a class="nav-link" href="{% url 'website-home' %}">Home <span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'menu' 'all' %}">Menu</a>
+                        <a class="nav-link" href="{% url 'menu-category' 'all' %}">Menu</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'website-about' %}">About</a>
@@ -34,7 +34,7 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-dark">
                             <li><a class="dropdown-item" href="{% url 'manage-orders' %}">Orders</a></li>
-                            <li><a class="dropdown-item" href="{% url 'manage' %}">Menu</a></li>
+                            <li><a class="dropdown-item" href="{% url 'manage-menu' %}">Menu</a></li>
                         </ul>
                     </li>
                     {% endif %}

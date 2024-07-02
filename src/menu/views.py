@@ -4,7 +4,7 @@ import faker
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import AddMenuItem, AddCategoryForm
 from .models import MenuCategory, MenuItem
@@ -28,8 +28,7 @@ def menu(request, selected_category=None):
     if selected_category == 'all':
         menu_items = MenuItem.objects.all()
     else:
-        menu_items = MenuItem.objects.filter(menu_category__label=selected_category)
-
+        menu_items = MenuItem.objects.filter(menu_category__slug=selected_category)
     if request.method == 'GET':
         if searched_keyword := request.GET.get('q'):
             menu_items = menu_items.filter(food_name__icontains=searched_keyword)
@@ -185,6 +184,7 @@ def remove_all_customers(request):
 # TODO: View to show recent restaurants
 # TODO: View for food party
 
+
 @login_required
 def staff_add_category(request):
     if request.user.is_staff:
@@ -192,14 +192,17 @@ def staff_add_category(request):
         if request.method == 'POST':
             form = AddCategoryForm(request.POST)
             if form.is_valid():
-                form.save()
+                category = form.save()
+                return redirect(category.get_absolute_url())
         else:
             form = AddCategoryForm()
         context = {
             'form': form,
             'menu_categories': menu_categories
         }
+
         return render(request, 'menu/add_category.html', context)
+        # return render(request, 'menu/menu.html', context)
 
     else:
         return HttpResponse("Access denied.")
@@ -212,7 +215,10 @@ def add_menu_item(request):
         if request.method == 'POST':
             form = AddMenuItem(request.POST, request.FILES)
             if form.is_valid():
-                form.save()
+                # form.save()
+                # return redirect('manage-menu')
+                category_item = form.save()
+                return redirect(category_item.get_absolute_url())
         else:
             form = AddMenuItem()
         context = {

@@ -1,12 +1,14 @@
 import os
 from pathlib import Path
 
-from django.contrib.auth.hashers import make_password, is_password_usable
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models.signals import pre_save, post_delete
 from django.dispatch import receiver
+
+from user.managers import UserManager
 
 
 class DateFieldsMixin(models.Model):
@@ -22,28 +24,82 @@ class User(AbstractUser):
         extension = Path(filename).suffix
         return f'profile_photos/{instance.__class__.__name__.lower()}/{instance.username}{extension}'
 
+    class Gender(models.TextChoices):
+        MALE = 'M', 'Male'
+        FEMALE = 'F', 'Female'
+
+    # Validators
+    username_validator = UnicodeUsernameValidator()
     phone_regex = RegexValidator(regex='^(\\+98|0)?9\\d{9}$', message='Invalid phone number!')  # TODO: proper message
 
+    # Fields
+    # Username Fields:
+    username = models.CharField(
+        "username",
+        max_length=150,
+        unique=True,
+        help_text=(
+            "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
+        ),
+        validators=[username_validator],
+        error_messages={
+            "unique": "A user with that username already exists.",
+        },
+        null=True,
+        blank=True,
+    )
+    phone = models.CharField('phone number', max_length=40, unique=True, validators=[phone_regex], null=True,
+                             blank=True, default=None)
+    email = models.EmailField('Email Address', unique=True, null=True, blank=True, default=None)
+
+    # Other Fields:
     photo = models.ImageField(
         upload_to=profile_image_upload_to,
         null=True,
         blank=True
     )
-    phone = models.CharField(max_length=40, validators=[phone_regex], blank=True)
-    address = models.TextField(null=True, blank=True)
-    date_modified = models.DateTimeField(auto_now=True)
+    age = models.PositiveSmallIntegerField(null=True, blank=True)
+    gender = models.CharField(max_length=1, choices=Gender.choices)
+    address = models.ForeignKey('Address', on_delete=models.SET_NULL, null=True, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
 
-    REQUIRED_FIELDS = []
+    objects = UserManager()
 
-    # AbstractBaseUser model's __str__ method returns 'username'
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        if not is_password_usable(self.password) or not self.password.startswith('pbkdf2_sha256$'):
-            # if self.pk is None:
-            # if not is_password_usable(self.password):
-            '''age password hash nashode bia hash kon'''
-            self.password = make_password(self.password)
-        super().save(force_insert, force_update, using, update_fields)
+    REQUIRED_FIELDS = ['email', 'phone']
+
+    def __str__(self):
+        return self.username or self.email or self.phone
+
+    def save(self, *args, **kwargs):
+
+        if not (self.username or self.email or self.phone):
+            raise ValueError("Providing username, email or phone number is required.")
+
+        if self.email == '':
+            self.email = None
+        if self.username == '':
+            self.username = None
+        if self.phone == '':
+            self.phone = None
+
+        super().save(*args, **kwargs)
+
+    @property
+    def is_customer(self):
+        return not self.is_staff
+
+
+class Address(models.Model):
+    city = models.CharField(max_length=50)
+    state = models.CharField(max_length=50)
+    neighborhood = models.CharField(max_length=50)
+    street = models.CharField(max_length=50)
+    alley = models.CharField(max_length=50)
+    zip_code = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.city}-{self.state}-{self.neighborhood}-{self.street}"
 
 
 class Staff(User):
@@ -60,9 +116,9 @@ class Staff(User):
         verbose_name = 'staff'
         verbose_name_plural = 'staffs'
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(self, *args, **kwargs):
         self.is_staff = True
-        super().save()
+        super().save(*args, **kwargs)
 
 
 class Customer(User):

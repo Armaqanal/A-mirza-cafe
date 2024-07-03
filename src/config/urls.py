@@ -25,6 +25,7 @@ urlpatterns = [
     # django debug toolbar
     path("__debug__/", include("debug_toolbar.urls")),
 
+
     # others
     path('admin/', admin.site.urls),
     path('', include('menu.urls')),

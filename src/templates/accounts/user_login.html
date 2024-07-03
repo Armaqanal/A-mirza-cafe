@@ -1,16 +1,33 @@
-{% extends "website/base.html" %}
+<!DOCTYPE html>
+<head lang="en">
+    {% extends 'website/base.html' %}
+    {% load static %}
+    {% block body %}
+        <body class="sub_page">
+    {% endblock body %}
 
-{% block content %}
+    {% block slide-section %}
+    {% endblock slide-section %}
+    {% block content %}
 
-{% load crispy_forms_tags %}
+        <div class="container py-5" align="center">
+            <h1>Login</h1>
+            <br>
+            <form method="post">
+                <input type="text" name="e or p" placeholder="email or phone" required="required"/>
+                <br><br>
+                <input type="password" name="p" placeholder="Password" required="required"/>
+                <br><br>
+                <div>
+                    {% csrf_token %}
+                    {{ login_form }}
+                    <button type="submit" class="btn btn-primary  btn-large"> login</button>
+                </div>
+            </form>
+        </div>
+    {% endblock %}
+    </body>
+</head>
+</html>
 
-<div class="container py-5">
-  <h1>Login</h1>
-  <form method="POST">
-    {% csrf_token %}
-    {{ login_form|crispy }}
-    <button class="btn btn-primary" type="submit">Login</button>
-  </form>
-</div>
 
-{% endblock %}

@@ -1,8 +1,12 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, HttpResponseRedirect, redirect
 from django.contrib.auth import authenticate, login, logout
 # from user.models import Customer
 from . import forms
+# from .models import User
+# from django.db.models import Q
+# from django.views.decorators.csrf import csrf_exempt
 
 
 def login_view(request):
@@ -44,17 +48,21 @@ def signup_view(request):
     pass
 
 
+# @csrf_exempt
 def user_login_view(request):
+    # print('**' *100)
     if request.method == 'POST':
-        form = forms.LoginForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data['email']
-            phone_number = form.cleaned_data['phone_number']
-            password = form.cleaned_data['password']
-            user = authenticate(email=email, password=password, phone_number=phone_number)
-            if user is not None:
-                login(request, user)
-                return redirect('website_home')
+        form = forms.UserLoginForm(request.POST)
+        email = request.POST['email']
+        password = request.POST['password']
+        phone_number = request.POST['phone_number']
+        user = authenticate(email=email, password=password, phone_number=phone_number)
+        if user is not None:
+            login(request, user)
+            messages.success(request, 'you do success login.')
+            return redirect('website/home')
     else:
-        form = forms.LoginForm()
+        form = forms.UserLoginForm()
     return render(request, 'accounts/user_login.html', {'form': form})
+
+

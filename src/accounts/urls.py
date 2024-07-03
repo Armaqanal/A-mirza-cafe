@@ -10,5 +10,3 @@ urlpatterns = [
     path('login/', user_login_view, name='login')
 ]
 
-
-

@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'user',
     'accounts'
 ]
-AUTH_USER_MODEL = "accounts.User"
+# AUTH_USER_MODEL = "accounts.User"
 # ACCOUNT_USER_MODEL_USERNAME_FIELD = "phone_number"
 
 MIDDLEWARE = [
@@ -141,7 +141,7 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-# AUTH_USER_MODEL = "user.User"
+AUTH_USER_MODEL = "user.User"
 
 
 

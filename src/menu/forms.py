@@ -4,8 +4,6 @@ from menu.models import MenuCategory
 from menu.models import MenuItem
 
 
-
-
 class AddCategoryForm(forms.ModelForm):
     class Meta:
         model = MenuCategory

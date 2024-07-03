@@ -7,7 +7,7 @@ from user.models import Customer
 from .forms import EditOrderItemForm, AddOrderItemForm, AddOrderForm, TotalSalesFilter
 from .models import Order, OrderItem
 from .ultis import total_sales_by_year_month_day, total_sales_by_year, top_year_based_on_sales, \
-    total_sales_by_month_year, top_year_month_based_on_sales, top_sales_by_year_month_day
+    total_sales_by_month_year, top_year_month_based_on_sales, top_sales_by_year_month_day,demography_items
 import csv
 
 
@@ -143,7 +143,7 @@ def total_sales_by_date(request):
     sales_by_month_year_day = None
     best_year = None
     best_year_month = None
-    best_year_month_day = None
+    best_year_month_day = Nonedata_items
     if request.method == 'POST':
         form = TotalSalesFilter(request.POST)
         if form.is_valid():
@@ -166,7 +166,8 @@ def total_sales_by_date(request):
         'sales_by_month_year_day': sales_by_month_year_day,
         'best_year': best_year,
         'best_year_month': best_year_month,
-        'best_year_month_day': best_year_month_day
+        'best_year_month_day': best_year_month_day,
+        "data_items" : list(demography_items())
     })
 
 

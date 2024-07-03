@@ -3,128 +3,227 @@
 
 
 {% block body %}
+
 <body class="sub_page">
-{% endblock body %}
+    {% endblock body %}
 
-{% block slide-section %}
-{# DO NOT write anything in this block! #}
-{% endblock slide-section %}
+    {% block slide-section %}
+    {# DO NOT write anything in this block! #}
+    {% endblock slide-section %}
 
-{% load crispy_forms_tags %}
-{% block content %}
-<div class="container center-content">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-body">
-                <h3 class="card-title">Sales by Date</h3>
-                <form method="post">
-                    {% csrf_token %}
-                    {{ form|crispy }}
-                    <button type="submit" class="btn btn-secondary btn-sm" style="margin-top: 10px;">Filter</button>
-                </form>
-                <div class="mt-3">
-                    <h4>Best Sales Date</h4>
-                    {% if best_year %}
-                    <button type="button" class="btn btn-success btn-block">{{ best_year }}</button>
-                    {% elif best_year_month %}
-                    <button type="button" class="btn btn-success btn-block">{{ best_year_month }}</button>
-                    {% elif best_year_month_day %}
-                    <button type="button" class="btn btn-success btn-block">{{ best_year_month_day }}</button>
-                    {% endif %}
+    {% load crispy_forms_tags %}
+    {% block content %}
+    <div class="container center-content">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">Sales by Date</h3>
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <button type="submit" class="btn btn-secondary btn-sm" style="margin-top: 10px;">Filter</button>
+                    </form>
+                    <div class="mt-3">
+                        <h4>Best Sales Date</h4>
+                        {% if best_year %}
+                        <button type="button" class="btn btn-success btn-block">{{ best_year }}</button>
+                        {% elif best_year_month %}
+                        <button type="button" class="btn btn-success btn-block">{{ best_year_month }}</button>
+                        {% elif best_year_month_day %}
+                        <button type="button" class="btn btn-success btn-block">{{ best_year_month_day }}</button>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-12">
-        <div class="container my-4">
-            {% if sales_by_year %}
-            <h2>Total Sales By Year</h2>
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>Year</th>
-                    <th>Total Sales</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for sales in sales_by_year %}
-                <tr>
-                    <td>{{ sales.year }}</td>
-                    <td>{{ sales.total_sales }}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            {% endif %}
+        <div class="col-md-12">
+            <div class="container my-4">
+                {% if sales_by_year %}
+                <h2>Total Sales By Year</h2>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Total Sales</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sales in sales_by_year %}
+                        <tr>
+                            <td>{{ sales.year }}</td>
+                            <td>{{ sales.total_sales }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
 
-            {% if sales_by_month_year %}
-            <h2>Total Sales By Year | Month</h2>
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>Year</th>
-                    <th>Month</th>
-                    <th>Total Sales</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for sales in sales_by_month_year %}
-                <tr>
-                    <td>{{ sales.year }}</td>
-                    <td>{{ sales.month }}</td>
-                    <td>{{ sales.total_sales }}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            {% endif %}
+                {% if sales_by_month_year %}src/templates/order/dashboard.html
+                <h2>Total Sales By Year | Month</h2>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Month</th>
+                            <th>Total Sales</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sales in sales_by_month_year %}
+                        <tr>
+                            <td>{{ sales.year }}</td>
+                            <td>{{ sales.month }}</td>
+                            <td>{{ sales.total_sales }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
 
-            {% if sales_by_month_year_day %}
-            <h2>Total Sales By Year | Month | Day</h2>
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>Year</th>
-                    <th>Month</th>
-                    <th>Day</th>
-                    <th>Total Sales</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for sales in sales_by_month_year_day %}
-                <tr>
-                    <td>{{ sales.year }}</td>
-                    <td>{{ sales.month }}</td>
-                    <td>{{ sales.day }}</td>
-                    <td>{{ sales.total_sales }}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            {% endif %}
-        </div>
+                {% if sales_by_month_year_day %}
+                <h2>Total Sales By Year | Month | Day</h2>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Month</th>
+                            <th>Day</th>
+                            <th>Total Sales</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sales in sales_by_month_year_day %}
+                        <tr>
+                            <td>{{ sales.year }}</td>
+                            <td>{{ sales.month }}</td>
+                            <td>{{ sales.day }}</td>
+                            <td>{{ sales.total_sales }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+            </div>
 
 
-        <div>
-            <h2>Download Sales Report By:</h2>
+            <div>
+                <h2>Download Sales Report By:</h2>
 
-            <div class="btn-group" role="group" aria-label="Basic outlined example">
-                <button type="button" class="btn btn-outline-primary"
+                <div class="btn-group" role="group" aria-label="Basic outlined example">
+                    <button type="button" class="btn btn-outline-primary"
                         onclick="window.location.href='{% url 'total_sales_by_year_csv' %}'">Year
-                </button>
-                <button type="button" class="btn btn-outline-primary"
+                    </button>
+                    <button type="button" class="btn btn-outline-primary"
                         onclick="window.location.href='{% url 'total_sales_by_month_year_csv' %}'">Year & Month
-                </button>
-                <button type="button" class="btn btn-outline-primary"
+                    </button>
+                    <button type="button" class="btn btn-outline-primary"
                         onclick="window.location.href='{% url 'total_sales_by_year_month_day_csv' %}'">Year, Month &
-                    Day
-                </button>
+                        Day
+                    </button>
+                </div>
             </div>
         </div>
+
     </div>
+    {# Download part#}
+    <br>
+    <br>
+    <hr>
+    <div class="items_demography">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Item</th>
+                    <th scope="col">3-8</th>
+                    <th scope="col">9-12</th>
+                    <th scope="col">13-17</th>
+                    <th scope="col">18-26</th>
+                    <th scope="col">27-40</th>
+                    <th scope="col">41-60</th>
+                    <th scope="col">+61</th>
+                    <th class="man" scope="col">mans</th>
+                    <th class="woman" scope="col">womans</th>
+                    <th scope="col">count</th>
+                    <th scope="col">total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in data_items %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ i.name }}</td>
+                    <td>
+                        <div class="man">
+                            {{i.age.3_7.man}}
+                        </div>
+                        /
+                        <div class="woman">
+                            {{i.age.3_7.woman}}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="man">
+                            {{i.age.8_12.man}}
+                        </div>
+                        /
+                        <div class="woman">
+                            {{i.age.8_12.woman}}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="man">
+                            {{i.age.13_17.man}}
+                        </div>
+                        /
+                        <div class="woman">
+                            {{i.age.13_17.woman}}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="man">
+                            {{i.age.18_26.man}}
+                        </div>
+                        /
+                        <div class="woman">
+                            {{i.age.18_26.woman}}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="man">
+                            {{i.age.27_40.man}}
+                        </div>
+                        /
+                        <div class="woman">
+                            {{i.age.27_40.woman}}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="man">
+                            {{i.age.41_60.man}}
+                        </div>
+                        /
+                        <div class="woman">
+                            {{i.age.41_60.woman}}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="man">
+                            {{i.age.above_61.man}}
+                        </div>
+                        /
+                        <div class="woman">
+                            {{i.age.above_60.woman}}
+                        </div>
+                    </td>
+                    <td class="man"></td>
+                    <td class="woman"></td>
+                    <td>{{i.total}}</td>
+                    <td>{{i.balance}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-</div>
-{# Download part#}
-
-{# zobeid#}
-{% endblock content %}
+    </div>
+    {% endblock content %}

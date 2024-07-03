@@ -30,3 +30,13 @@ class AddOrderForm(forms.ModelForm):
             'total_order_item_prices': forms.HiddenInput()
 
         }
+
+
+class TotalSalesFilter(forms.Form):
+    TIME_CHOICES = [
+        ('year', 'Year'),
+        ('year|month', 'Year and Month'),
+        ('year|month|day', 'Year, Month, and Day'),
+    ]
+
+    time_choice = forms.ChoiceField(choices=TIME_CHOICES)

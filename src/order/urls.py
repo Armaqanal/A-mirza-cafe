@@ -23,4 +23,11 @@ urlpatterns = [
          name='edit-order-item'),
     path('manage-orders/<int:order_id>/manage-order-items/<int:order_item_id>/delete-order-item/',
          views.delete_order_item, name='delete-order-item'),
+
+    # manage-dashboard
+    path('manage-dashboard/', views.total_sales_by_date, name='manage-dashboard'),
+    path('manage-dashboard/sales-by-y', views.total_sales_by_year_csv, name='total_sales_by_year_csv'),
+    path('manage-dashboard/sales-by-y-m', views.total_sales_by_month_year_csv, name='total_sales_by_month_year_csv'),
+    path('manage-dashboard/sales-by-y-m-d', views.total_sales_by_year_month_day_csv,
+         name='total_sales_by_year_month_day_csv')
 ]

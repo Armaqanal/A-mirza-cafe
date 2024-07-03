@@ -7,6 +7,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models.signals import pre_save, post_delete
 from django.dispatch import receiver
+from django.utils import timezone
 
 from user.managers import UserManager
 
@@ -58,7 +59,7 @@ class User(AbstractUser):
         null=True,
         blank=True
     )
-    age = models.PositiveSmallIntegerField(null=True, blank=True)
+    date_of_birth = models.DateField('Date Of Birth', null=True, blank=True)
     gender = models.CharField(max_length=1, choices=Gender.choices)
     address = models.ForeignKey('Address', on_delete=models.SET_NULL, null=True, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
@@ -67,6 +68,16 @@ class User(AbstractUser):
     objects = UserManager()
 
     REQUIRED_FIELDS = ['email', 'phone']
+
+    @property
+    def age(self):
+        today = timezone.now().date()
+        age = int(
+            today.year
+            - self.date_of_birth.year
+            - ((today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day))
+        )
+        return age
 
     def __str__(self):
         return self.username or self.email or self.phone

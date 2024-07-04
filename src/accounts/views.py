@@ -50,7 +50,6 @@ def signup_view(request):
 
 # @csrf_exempt
 def user_login_view(request):
-    # print('**' *100)
     if request.method == 'POST':
         form = forms.UserLoginForm(request.POST)
         email = request.POST['email']
@@ -64,5 +63,3 @@ def user_login_view(request):
     else:
         form = forms.UserLoginForm()
     return render(request, 'accounts/user_login.html', {'form': form})
-
-

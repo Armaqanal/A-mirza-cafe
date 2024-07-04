@@ -23,15 +23,17 @@ class DateFieldsMixin(models.Model):
 class User(AbstractUser):
     def profile_image_upload_to(instance, filename):
         extension = Path(filename).suffix
-        return f'profile_photos/{instance.__class__.__name__.lower()}/{instance.username}{extension}'
+        return f"profile_photos/{instance.__class__.__name__.lower()}/{instance.username}{extension}"
 
     class Gender(models.TextChoices):
-        MALE = 'M', 'Male'
-        FEMALE = 'F', 'Female'
+        MALE = "M", "Male"
+        FEMALE = "F", "Female"
 
     # Validators
     username_validator = UnicodeUsernameValidator()
-    phone_regex = RegexValidator(regex='^(\\+98|0)?9\\d{9}$', message='Invalid phone number!')  # TODO: proper message
+    phone_regex = RegexValidator(
+        regex="^(\\+98|0)?9\\d{9}$", message="Invalid phone number!"
+    )  # TODO: proper message
 
     # Fields
     # Username Fields:
@@ -49,25 +51,32 @@ class User(AbstractUser):
         null=True,
         blank=True,
     )
-    phone = models.CharField('phone number', max_length=40, unique=True, validators=[phone_regex], null=True,
-                             blank=True, default=None)
-    email = models.EmailField('Email Address', unique=True, null=True, blank=True, default=None)
+    phone = models.CharField(
+        "phone number",
+        max_length=40,
+        unique=True,
+        validators=[phone_regex],
+        null=True,
+        blank=True,
+        default=None,
+    )
+    email = models.EmailField(
+        "Email Address", unique=True, null=True, blank=True, default=None
+    )
 
     # Other Fields:
-    photo = models.ImageField(
-        upload_to=profile_image_upload_to,
-        null=True,
-        blank=True
-    )
-    date_of_birth = models.DateField('Date Of Birth', null=True, blank=True)
+    photo = models.ImageField(upload_to=profile_image_upload_to, null=True, blank=True)
+    date_of_birth = models.DateField("Date Of Birth", null=True, blank=True)
     gender = models.CharField(max_length=1, choices=Gender.choices)
-    address = models.ForeignKey('Address', on_delete=models.SET_NULL, null=True, blank=True)
+    address = models.ForeignKey(
+        "Address", on_delete=models.SET_NULL, null=True, blank=True
+    )
     date_joined = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 
     objects = UserManager()
 
-    REQUIRED_FIELDS = ['email', 'phone']
+    REQUIRED_FIELDS = ["email", "phone"]
 
     @property
     def age(self):
@@ -75,7 +84,10 @@ class User(AbstractUser):
         age = int(
             today.year
             - self.date_of_birth.year
-            - ((today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day))
+            - (
+                (today.month, today.day)
+                < (self.date_of_birth.month, self.date_of_birth.day)
+            )
         )
         return age
 
@@ -87,11 +99,11 @@ class User(AbstractUser):
         if not (self.username or self.email or self.phone):
             raise ValueError("Providing username, email or phone number is required.")
 
-        if self.email == '':
+        if self.email == "":
             self.email = None
-        if self.username == '':
+        if self.username == "":
             self.username = None
-        if self.phone == '':
+        if self.phone == "":
             self.phone = None
 
         super().save(*args, **kwargs)
@@ -115,17 +127,19 @@ class Address(models.Model):
 
 class Staff(User):
     class RoleType(models.TextChoices):
-        MANAGER = 'manager', 'manager'
-        BARISTA = 'barista', 'barista'
-        WAITER = 'waiter', 'waiter'
-        WAITRESS = 'waitress', 'waitress'
+        MANAGER = "manager", "manager"
+        BARISTA = "barista", "barista"
+        WAITER = "waiter", "waiter"
+        WAITRESS = "waitress", "waitress"
 
     salary = models.IntegerField(default=0, blank=False)
-    role = models.CharField(max_length=25, choices=RoleType.choices, default=RoleType.BARISTA)
+    role = models.CharField(
+        max_length=25, choices=RoleType.choices, default=RoleType.BARISTA
+    )
 
     class Meta:
-        verbose_name = 'staff'
-        verbose_name_plural = 'staffs'
+        verbose_name = "staff"
+        verbose_name_plural = "staffs"
 
     def save(self, *args, **kwargs):
         self.is_staff = True
@@ -136,8 +150,8 @@ class Customer(User):
     balance = models.IntegerField(default=0, blank=False)
 
     class Meta:
-        verbose_name = 'customer'
-        verbose_name_plural = 'customers'
+        verbose_name = "customer"
+        verbose_name_plural = "customers"
 
 
 @receiver(post_delete, sender=User)

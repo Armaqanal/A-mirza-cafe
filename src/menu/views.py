@@ -58,7 +58,7 @@ def mock_menu_category(request):
             label=label
         )
         new_cat.save()
-    return redirect('menu', 'all')
+    return redirect('menu-category', 'all')
 
 
 def mock_menu_item(request):
@@ -87,7 +87,7 @@ def mock_menu_item(request):
 
             new_item.image = target_photo_path.removeprefix('media/')
             new_item.save()
-    return redirect('menu', 'all')
+    return redirect('menu-category', 'all')
 
 
 def mock_staffs(request, count=5):

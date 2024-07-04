@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, HttpResponseRedirect, redirect
 from django.contrib.auth import authenticate, login, logout
 # from user.models import Customer
@@ -52,14 +53,13 @@ def signup_view(request):
 def user_login_view(request):
     if request.method == 'POST':
         form = forms.UserLoginForm(request.POST)
-        email = request.POST['email']
-        password = request.POST['password']
-        phone_number = request.POST['phone_number']
-        user = authenticate(email=email, password=password, phone_number=phone_number)
-        if user is not None:
-            login(request, user)
-            messages.success(request, 'you do success login.')
-            return redirect('website/home')
+        if form.is_valid():
+            email = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=email, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('website.home')
     else:
         form = forms.UserLoginForm()
     return render(request, 'accounts/user_login.html', {'form': form})

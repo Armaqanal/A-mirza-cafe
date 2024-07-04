@@ -122,108 +122,104 @@
                     </button>
                 </div>
             </div>
+            <div class="items_demography">
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Item</th>
+                            <th scope="col">3-8</th>
+                            <th scope="col">9-12</th>
+                            <th scope="col">13-17</th>
+                            <th scope="col">18-26</th>
+                            <th scope="col">27-40</th>
+                            <th scope="col">41-60</th>
+                            <th scope="col">+61</th>
+                            <th class="man" scope="col">mans</th>
+                            <th class="woman" scope="col">womans</th>
+                            <th scope="col">count</th>
+                            <th scope="col">total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in data_items %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ i.name }}</td>
+                            <td>
+                                <div class="man">
+                                    {{i.age.3_7.man}}
+                                </div>
+                                /
+                                <div class="woman">
+                                    {{i.age.3_7.woman}}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="man">
+                                    {{i.age.8_12.man}}
+                                </div>
+                                /
+                                <div class="woman">
+                                    {{i.age.8_12.woman}}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="man">
+                                    {{i.age.13_17.man}}
+                                </div>
+                                /
+                                <div class="woman">
+                                    {{i.age.13_17.woman}}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="man">
+                                    {{i.age.18_26.man}}
+                                </div>
+                                /
+                                <div class="woman">
+                                    {{i.age.18_26.woman}}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="man">
+                                    {{i.age.27_40.man}}
+                                </div>
+                                //<div class="woman">100</div>
+                                <div class="woman">
+                                    {{i.age.27_40.woman}}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="man">
+                                    {{i.age.41_60.man}}
+                                </div>
+                                /
+                                <div class="woman">
+                                    {{i.age.41_60.woman}}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="man">
+                                    {{i.age.above_61.man}}
+                                </div>
+                                /
+                                <div class="woman">
+                                    {{i.age.above_60.woman}}
+                                </div>
+                            </td>
+                            <td class="man">{{i.man}}</td>
+                            <td class="woman">{{i.woman}}</td>
+                            <td>{{i.total}}</td>
+                            <td>{{i.balance}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+        
+            </div>
         </div>
-
-    </div>
-    {# Download part#}
-    <br>
-    <br>
-    <hr>
-    <div class="items_demography">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Item</th>
-                    <th scope="col">3-8</th>
-                    <th scope="col">9-12</th>
-                    <th scope="col">13-17</th>
-                    <th scope="col">18-26</th>
-                    <th scope="col">27-40</th>
-                    <th scope="col">41-60</th>
-                    <th scope="col">+61</th>
-                    <th class="man" scope="col">mans</th>
-                    <th class="woman" scope="col">womans</th>
-                    <th scope="col">count</th>
-                    <th scope="col">total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for i in data_items %}
-                <tr>
-                    <th scope="row">{{ forloop.counter }}</th>
-                    <td>{{ i.name }}</td>
-                    <td>
-                        <div class="man">
-                            {{i.age.3_7.man}}
-                        </div>
-                        /
-                        <div class="woman">
-                            {{i.age.3_7.woman}}
-                        </div>
-                    </td>
-                    <td>
-                        <div class="man">
-                            {{i.age.8_12.man}}
-                        </div>
-                        /
-                        <div class="woman">
-                            {{i.age.8_12.woman}}
-                        </div>
-                    </td>
-                    <td>
-                        <div class="man">
-                            {{i.age.13_17.man}}
-                        </div>
-                        /
-                        <div class="woman">
-                            {{i.age.13_17.woman}}
-                        </div>
-                    </td>
-                    <td>
-                        <div class="man">
-                            {{i.age.18_26.man}}
-                        </div>
-                        /
-                        <div class="woman">
-                            {{i.age.18_26.woman}}
-                        </div>
-                    </td>
-                    <td>
-                        <div class="man">
-                            {{i.age.27_40.man}}
-                        </div>
-                        /
-                        <div class="woman">
-                            {{i.age.27_40.woman}}
-                        </div>
-                    </td>
-                    <td>
-                        <div class="man">
-                            {{i.age.41_60.man}}
-                        </div>
-                        /
-                        <div class="woman">
-                            {{i.age.41_60.woman}}
-                        </div>
-                    </td>
-                    <td>
-                        <div class="man">
-                            {{i.age.above_61.man}}
-                        </div>
-                        /
-                        <div class="woman">
-                            {{i.age.above_60.woman}}
-                        </div>
-                    </td>
-                    <td class="man"></td>
-                    <td class="woman"></td>
-                    <td>{{i.total}}</td>
-                    <td>{{i.balance}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
 
     </div>
     {% endblock content %}

@@ -124,7 +124,11 @@ def demography_items():
             item_data["balance"] += (f.price * f.quantity) - f.total_discounted_price
             person = f.order.customer
             person_age = datetime.datetime.now().year - person.date_of_birth.year
-            person_gender = person.gender
+            if person.gender == "M":
+                person_gender = "man"
+            elif person.gender == "F":
+                person_gender = "woman"
+            person_gender = "man" if person.gender == "M"
             if 3 <= person_age <= 8:
                 item_data[person_gender] += 1
                 item_data["age"]["3_8"][person_gender] += 1

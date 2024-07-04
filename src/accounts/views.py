@@ -1,13 +1,11 @@
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
 from django.views.generic import View
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm, PasswordChangeForm
-from .forms import CustomerRegisterForm
-from django.contrib import messages
-# from user.forms import CustomerCreationForm
 
 from . import forms
+from .forms import CustomerRegisterForm
 
 
 def login_view(request):
@@ -49,8 +47,13 @@ class RegisterView(View):
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            return redirect('accounts:login')
+            print('*' * 200, form)
+            try:
+                form.save()
+            except ValueError:
+                form.errors['No username'] = 'Username, Email or password is needed'
+            else:
+                return redirect('accounts:login')
         for error, message in form.errors.items():
             messages.error(request, message)
 

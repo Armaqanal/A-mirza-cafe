@@ -128,7 +128,6 @@ def demography_items():
                 person_gender = "man"
             elif person.gender == "F":
                 person_gender = "woman"
-            person_gender = "man" if person.gender == "M"
             if 3 <= person_age <= 8:
                 item_data[person_gender] += 1
                 item_data["age"]["3_8"][person_gender] += 1

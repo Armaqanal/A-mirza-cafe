@@ -33,5 +33,7 @@ urlpatterns = [
     path('manage-menu/', views.manage_view, name='manage-menu'),
     path('manage-menu/add-category/', views.staff_add_category, name='add-menu-categories'),
     path('manage-menu/add-item/', views.add_menu_item, name='add-menu-item'),
-    # path('menu/<slug:slug>/, views.menu_category, name='menu-category')
+
+
+    path('menu/<slug:slug>/', views.menu, name='menu-category')
 ]

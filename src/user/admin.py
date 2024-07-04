@@ -23,7 +23,7 @@ class AMirzaUserAdmin(UserAdmin):
                 "username", "email", "phone", "password")
         }),
         ('Personal Info', {
-            "fields": ["first_name", "last_name", "address", "gender", "age", "photo", "date_joined",
+            "fields": ["first_name", "last_name", "address", "gender", "date_of_birth", "photo", "date_joined",
                        "date_modified",
                        "last_login"
                        ]
@@ -39,7 +39,7 @@ class AMirzaUserAdmin(UserAdmin):
             "fields": ("username", "email", "phone", "password1", "password2")
         }),
         ('Personal Info', {
-            "fields": ["first_name", "last_name", "address", "gender", "age", "photo", "date_joined",
+            "fields": ["first_name", "last_name", "address", "gender", "date_of_birth", "photo", "date_joined",
                        "date_modified",
                        "last_login"
                        ]
@@ -65,7 +65,7 @@ class CustomerAdmin(AMirzaUserAdmin):
                 "username", "email", "phone", "password")
         }),
         ('Personal Info', {
-            "fields": ("first_name", "last_name", "address", "gender", "age", "photo", "date_joined",
+            "fields": ("first_name", "last_name", "address", "gender", "date_of_birth", "photo", "date_joined",
                        "date_modified",
                        "last_login")
         }),
@@ -83,7 +83,7 @@ class CustomerAdmin(AMirzaUserAdmin):
             "fields": ("username", "email", "phone", "password1", "password2")
         }),
         ('Personal Info', {
-            "fields": ("first_name", "last_name", "address", "gender", "age", "photo", "date_joined",
+            "fields": ("first_name", "last_name", "address", "gender", "date_of_birth", "photo", "date_joined",
                        "date_modified",
                        "last_login")
         }),
@@ -109,7 +109,7 @@ class StaffAdmin(AMirzaUserAdmin):
                 "username", "email", "phone", "password")
         }),
         ('Personal Info', {
-            "fields": ("first_name", "last_name", "address", "gender", "age", "photo", "date_joined",
+            "fields": ("first_name", "last_name", "address", "gender", "date_of_birth", "photo", "date_joined",
                        "date_modified",
                        "last_login")
         }),
@@ -127,7 +127,7 @@ class StaffAdmin(AMirzaUserAdmin):
             "fields": ("username", "email", "phone", "password1", "password2")
         }),
         ('Personal Info', {
-            "fields": ("first_name", "last_name", "address", "gender", "age", "photo", "date_joined",
+            "fields": ("first_name", "last_name", "address", "gender", "date_of_birth", "photo", "date_joined",
                        "date_modified",
                        "last_login")
         }),

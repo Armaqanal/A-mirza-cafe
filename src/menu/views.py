@@ -2,10 +2,12 @@ import os
 import random
 import faker
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponseRedirect
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from django.shortcuts import render, redirect, get_object_or_404
-
+from django.views.generic import CreateView, ListView
+from django.urls import reverse_lazy
 from .forms import AddMenuItem, AddCategoryForm
 from .models import MenuCategory, MenuItem
 from user.models import Staff, Customer
@@ -21,24 +23,6 @@ def about(request):
 
 def book(request):
     return render(request, 'website/pages/book.html')
-
-
-def menu(request, selected_category=None):
-    categories = MenuCategory.objects.all()
-    if selected_category == 'all':
-        menu_items = MenuItem.objects.all()
-    else:
-        menu_items = MenuItem.objects.filter(menu_category__slug=selected_category)
-    if request.method == 'GET':
-        if searched_keyword := request.GET.get('q'):
-            menu_items = menu_items.filter(food_name__icontains=searched_keyword)
-
-    context = {
-        "categories": categories,
-        "menu_items": menu_items,
-        "selected_category": selected_category
-    }
-    return render(request, 'menu/menu.html', context)
 
 
 LABEL_LIST = ['Iced Coffee', 'Hot Coffee', 'Fruit Juice', 'Burger', 'Pizza', 'Pasta', 'Fries']
@@ -184,52 +168,60 @@ def remove_all_customers(request):
 # TODO: View for food party
 
 
-@login_required
-def staff_add_category(request):
-    if request.user.is_staff:
-        menu_categories = MenuCategory.objects.all()
-        if request.method == 'POST':
-            form = AddCategoryForm(request.POST)
-            if form.is_valid():
-                category = form.save()
-                return redirect(category.get_absolute_url())
-        else:
-            form = AddCategoryForm()
-        context = {
-            'form': form,
-            'menu_categories': menu_categories
-        }
-
-        return render(request, 'menu/add_category.html', context)
-        # return render(request, 'menu/menu.html', context)
-
-    else:
-        return HttpResponse("Access denied.")
-
-
-@login_required
-def add_menu_item(request):
-    if request.user.is_staff:
-        menu_items = MenuItem.objects.all()
-        if request.method == 'POST':
-            form = AddMenuItem(request.POST, request.FILES)
-            if form.is_valid():
-                # form.save()
-                # return redirect('manage-menu')
-                category_item = form.save()
-                return redirect(category_item.get_absolute_url())
-        else:
-            form = AddMenuItem()
-        context = {
-            'form': form,
-            'menu_categories': menu_items
-        }
-        return render(request, 'menu/add_item.html', context)
-
-    else:
-        return HttpResponse("Access denied.")
-    # TODO:ACCESS DENIED PAGE FOR REDIRECT HOMEPAGE
-
-
 def manage_view(request):
     return render(request, 'menu/manage.html')
+
+
+# *****************************Category_create_view_by_staff**************************
+# @login_required
+class CategoryCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = "menu.add_menucategory"
+    model = MenuCategory
+    form_class = AddCategoryForm
+    template_name = 'menu/category_form.html'
+
+    def has_permission(self):
+        return self.request.user.is_staff
+
+    def handle_no_permission(self):
+        return HttpResponseRedirect(
+            reverse_lazy('accounts:login'))  # TODO When my user is logged in,This redirect me to home page
+
+
+# *************************************MenuItem_create_view_by_staff*********************
+class MenuItemCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = "menu.add_menuitem"
+    model = MenuItem
+    form_class = AddMenuItem
+    template_name = 'menu/menuitem_form.html'
+
+    def has_permission(self):
+        return self.request.user.is_staff
+
+    def handle_no_permission(self):
+        return HttpResponseRedirect(
+            reverse_lazy('accounts:login'))  # TODO When my user is logged in,This redirect me to home page
+
+
+# **************************************Menu***********************************************
+class MenuListView(ListView):
+    # model = MenuItem
+    template_name = 'menu/menu_list.html'
+    context_object_name = 'menu_items'
+
+    def get_queryset(self):
+        queryset = MenuItem.objects.all()
+        selected_category = self.kwargs.get('slug')
+        if selected_category != 'all':
+            queryset = queryset.filter(menu_category__slug=selected_category)
+        searched_keyword = self.request.GET.get('q')
+        if searched_keyword:
+            queryset = queryset.filter(food_name__icontains=searched_keyword)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = MenuCategory.objects.all()
+        context['selected_category'] = self.kwargs.get('slug')
+        return context

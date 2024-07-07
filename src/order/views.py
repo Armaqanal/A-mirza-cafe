@@ -1,3 +1,5 @@
+from django.contrib.admin.views.decorators import staff_member_required
+from django.http import HttpResponse
 import datetime
 
 from django.db.models import Count, Sum
@@ -5,6 +7,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Order, OrderItem
 from user.models import Customer
 from menu.models import MenuItem
+from user.models import Customer
+
+from .forms import EditOrderItemForm, AddOrderItemForm, AddOrderForm, TotalSalesFilter
+from .models import Order, OrderItem
+from .ultis import total_sales_by_year_month_day, total_sales_by_year, top_year_based_on_sales, \
+    total_sales_by_month_year, top_year_month_based_on_sales, top_sales_by_year_month_day,demography_items
+import csv
 
 
 def cart(request):
@@ -39,6 +48,183 @@ def add_menu_item_to_cart(request, selected_category=None, menu_item_id=None):
                                                                             order=unpaid_order, quantity=1)
 
     return redirect('menu', selected_category)
+
+
+def manage_orders(request):
+    orders = Order.objects.select_related('customer').filter(is_paid=True).order_by('-id')
+    context = {
+        "orders": orders
+    }
+    return render(request, 'order/manage_orders.html', context)
+
+
+def add_order(request):
+    form = AddOrderForm()
+    if request.method == 'POST':
+        form = AddOrderForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('manage-orders')
+
+    context = {
+        'form': form
+    }
+    return render(request, 'order/order_form.html', context)
+
+
+def edit_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    form = AddOrderForm(instance=order)
+    if request.method == 'POST':
+        form = AddOrderForm(request.POST)
+        if form.is_valid():
+            order.update_from_cleaned_data(form.cleaned_data)
+            return redirect('manage-orders')
+    context = {
+        'order_id': order_id,
+        'form': form
+    }
+    return render(request, 'order/order_form.html', context)
+
+
+def delete_order(request, order_id):
+    order = Order.objects.get(id=order_id)
+    order.delete()
+    return redirect('manage-orders')
+
+
+# Manage orders
+def manage_order_items(request, order_id):
+    order_items = OrderItem.objects.select_related('menu_item').filter(order=order_id).order_by('-id')
+    context = {
+        'order_id': order_id,
+        'order_items': order_items
+    }
+    return render(request, 'order/manage_order_items.html', context)
+
+
+def add_order_item(request, order_id):
+    order = Order.objects.get(id=order_id)
+    form = AddOrderItemForm(initial={'order': order, 'quantity': 1})
+    if request.method == 'POST':
+        form = AddOrderItemForm(request.POST)
+        if form.is_valid():
+            print('*' * 50, form.cleaned_data)
+            order_item = form.save()
+            return redirect('manage-order-items', order_item.order_id)
+    context = {
+        'order_id': order_id,
+        'form': form
+    }
+    return render(request, 'order/order_item_form.html', context)
+
+
+def edit_order_item(request, order_id, order_item_id):
+    order_item = OrderItem.objects.get(id=order_item_id)
+    form = EditOrderItemForm(instance=order_item)
+    if request.method == 'POST':
+        form = EditOrderItemForm(request.POST)
+        if form.is_valid():
+            order_item.update_from_cleaned_data(form.cleaned_data)
+            return redirect('manage-order-items', order_item.order_id)
+    context = {
+        'order_id': order_id,
+        'order_item_id': order_item_id,
+        'form': form
+    }
+    return render(request, 'order/order_item_form.html', context)
+
+
+def delete_order_item(request, order_id, order_item_id):
+    order_item = OrderItem.objects.get(id=order_item_id)
+    order_item.delete()
+    return redirect('manage-order-items', order_item.order_id)
+
+
+@staff_member_required
+def total_sales_by_date(request):
+    sales_by_year = None
+    sales_by_month_year = None
+    sales_by_month_year_day = None
+    best_year = None
+    best_year_month = None
+    best_year_month_day = Nonedata_items
+    if request.method == 'POST':
+        form = TotalSalesFilter(request.POST)
+        if form.is_valid():
+            filter_type = form.cleaned_data['time_choice']
+            if filter_type == 'year':
+                sales_by_year = total_sales_by_year()
+                best_year = top_year_based_on_sales()
+            elif filter_type == 'year|month':
+                sales_by_month_year = total_sales_by_month_year()
+                best_year_month = top_year_month_based_on_sales()
+            elif filter_type == 'year|month|day':
+                sales_by_month_year_day = total_sales_by_year_month_day()
+                best_year_month_day = top_sales_by_year_month_day()
+    else:
+        form = TotalSalesFilter()
+    return render(request, 'order/dashboard.html', {
+        'form': form,
+        'sales_by_year': sales_by_year,
+        'sales_by_month_year': sales_by_month_year,
+        'sales_by_month_year_day': sales_by_month_year_day,
+        'best_year': best_year,
+        'best_year_month': best_year_month,
+        'best_year_month_day': best_year_month_day,
+        "data_items" : list(demography_items())
+    })
+
+
+@staff_member_required
+def total_sales_by_year_csv(request):
+    response = HttpResponse(
+        content_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="sales_by_year.csv"'},
+    )
+
+    writer = csv.writer(response)
+    sales_report_by_year = total_sales_by_year()
+
+    writer.writerow(['year', 'total_sales'])
+    for row in sales_report_by_year:
+        writer.writerow([row['year'], row['total_sales']])
+
+    return response
+
+
+@staff_member_required
+def total_sales_by_month_year_csv(request):
+    response = HttpResponse(
+        content_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="sales_by_month_year.csv"'},
+    )
+
+    writer = csv.writer(response)
+    sales_report_by_year_month = total_sales_by_month_year()
+
+    writer.writerow(['year', 'month', 'total_sales'])
+    for row in sales_report_by_year_month:
+        writer.writerow([row['year'], row['month'], row['total_sales']])
+
+    return response
+
+
+@staff_member_required
+def total_sales_by_year_month_day_csv(request):
+    response = HttpResponse(
+        content_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="sales_by_year_month_day.csv"'},
+    )
+
+    writer = csv.writer(response)
+    sales_report_by_year_month_day = total_sales_by_year_month_day()
+
+    writer.writerow(['year', 'month', 'day', 'total_sales'])
+    for row in sales_report_by_year_month_day:
+        writer.writerow([row['year'], row['month'], row['day'], row['total_sales']])
+
+    return response
 
 
 # def add_menu_item_to_cart(request, menu_item_id=None):

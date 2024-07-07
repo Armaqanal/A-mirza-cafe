@@ -3,11 +3,22 @@ from django.db.models.signals import pre_save, post_delete
 from django.dispatch import receiver
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.urls import reverse
+from django.utils.text import slugify
 from user.models import DateFieldsMixin
 
 
 class MenuCategory(DateFieldsMixin, models.Model):
-    label = models.CharField(max_length=100)
+    label = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100, unique=True, blank=True, null=True, allow_unicode=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.label, allow_unicode=True)
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('menu-category', kwargs={'selected_category': self.slug})
 
     def __str__(self):
         return self.label
@@ -18,6 +29,8 @@ class MenuItem(DateFieldsMixin, models.Model):
         return f"menu_item_images/{self.menu_category}/{filename}"
 
     food_name = models.CharField(max_length=100, null=False)
+    slug = models.SlugField(max_length=100, blank=True, null=True, allow_unicode=True)
+
     description = models.CharField(max_length=200, null=True, blank=True)
     price = models.PositiveIntegerField(default=0)
     discount = models.DecimalField(
@@ -46,6 +59,22 @@ class MenuItem(DateFieldsMixin, models.Model):
     @property
     def discounted_price(self):
         return round(self.price * (1 - self.discount))
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.food_name, allow_unicode=True)
+            unique_slug = self.slug
+            num = 1
+            while MenuItem.objects.filter(slug=unique_slug).exists():
+                unique_slug = f"{self.slug}-{num}"
+                num += 1
+            self.slug = unique_slug
+        super().save(args, kwargs)
+
+    def get_absolute_url(self):
+        return reverse('menu-category', kwargs={'selected_category': self.menu_category.slug})
+        # return reverse('menu-category', kwargs={'selected_category': self.slug})
+        # TODO:NEED VIEW FOR ITEMS OR BE HANDLED ON SELECTED CATEGORY
 
 
 @receiver(post_delete, sender=MenuItem)

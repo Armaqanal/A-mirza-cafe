@@ -1,10 +1,16 @@
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.views.generic import View
+
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, HttpResponseRedirect, redirect
 from django.contrib.auth import authenticate, login, logout
 # from user.models import Customer
 from . import forms
+from .forms import CustomerRegisterForm
 # from .models import User
 # from django.db.models import Q
 # from django.views.decorators.csrf import csrf_exempt
@@ -45,8 +51,30 @@ def logout_view(request):
     return redirect('website-home')
 
 
-def signup_view(request):
-    pass
+class RegisterView(View):
+    form_class = CustomerRegisterForm
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'form': self.form_class()
+        }
+        return render(request, 'accounts/register.html', context)
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST, request.FILES)
+        if form.is_valid():
+            print('*' * 200, form)
+            try:
+                form.save()
+            except ValueError:
+                form.errors['No username'] = 'Username, Email or password is needed'
+            else:
+                return redirect('accounts:login')
+        for error, message in form.errors.items():
+            messages.error(request, message)
+
+        context = {'form': form}
+        return render(request, 'accounts/register.html', context)
 
 
 # @csrf_exempt

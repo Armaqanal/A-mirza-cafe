@@ -29,8 +29,7 @@ def menu(request, selected_category=None):
     if selected_category == 'all':
         menu_items = MenuItem.objects.all()
     else:
-        menu_items = MenuItem.objects.filter(menu_category__label=selected_category)
-
+        menu_items = MenuItem.objects.filter(menu_category__slug=selected_category)
     if request.method == 'GET':
         if searched_keyword := request.GET.get('q'):
             menu_items = menu_items.filter(food_name__icontains=searched_keyword)
@@ -60,7 +59,7 @@ def mock_menu_category(request):
             label=label
         )
         new_cat.save()
-    return redirect('menu', 'all')
+    return redirect('menu-category', 'all')
 
 
 def mock_menu_item(request):
@@ -89,24 +88,23 @@ def mock_menu_item(request):
 
             new_item.image = target_photo_path.removeprefix('media/')
             new_item.save()
-    return redirect('menu', 'all')
+    return redirect('menu-category', 'all')
 
 
 def mock_staffs(request, count=5):
-    print('*' * 50, 'staff')
-    valid_phone_list = ['09318923823', '09231802829', '09123334433']
     f = faker.Faker()
     photos_dir = "static/user/images/profile-photo-samples/"
     photo_list = os.listdir(photos_dir)
     for _ in range(count):
         new_staff = Staff(
             username=f.user_name(),
-            password=f.password(),
+            password='123',
             first_name=f.first_name(),
             last_name=f.last_name(),
-            phone=random.choice(valid_phone_list),
+            # age=random.randint(8, 99),
+            phone='0912' + ''.join([str(random.randint(0, 9)) for _ in range(7)]),
             email=f.email(),
-            address=f.address(),
+            # address=f.address(),
             is_active=random.choice([True, False]),
             salary=1800,
             role=random.choice([choice_tuple[0] for choice_tuple in Staff.RoleType.choices]),
@@ -125,19 +123,19 @@ def mock_staffs(request, count=5):
 
 
 def mock_customers(request, count=5):
-    valid_phone_list = ['09318923823', '09231802829', '09123334433']
     f = faker.Faker()
     photos_dir = "static/user/images/profile-photo-samples/"
     photo_list = os.listdir(photos_dir)
     for _ in range(count):
         new_customer = Customer(
             username=f.user_name(),
-            password=f.password(),
+            password='123',
             first_name=f.first_name(),
             last_name=f.last_name(),
-            phone=random.choice(valid_phone_list),
+            # age=random.randint(8, 99),
+            phone='0912' + ''.join([str(random.randint(0, 9)) for _ in range(7)]),
             email=f.email(),
-            address=f.address(),
+            # address=f.address(),
             is_active=random.choice([True, False]),
             balance=180,
         )
@@ -188,6 +186,7 @@ def remove_all_customers(request):
 
 
 
+
 # def profile(request):
 #     if 'username' in request.session:
 #         username = request.session['username']
@@ -210,14 +209,17 @@ def staff_add_category(request):
         if request.method == 'POST':
             form = AddCategoryForm(request.POST)
             if form.is_valid():
-                form.save()
+                category = form.save()
+                return redirect(category.get_absolute_url())
         else:
             form = AddCategoryForm()
         context = {
             'form': form,
             'menu_categories': menu_categories
         }
+
         return render(request, 'menu/add_category.html', context)
+        # return render(request, 'menu/menu.html', context)
 
     else:
         return HttpResponse("Access denied.")
@@ -230,7 +232,10 @@ def add_menu_item(request):
         if request.method == 'POST':
             form = AddMenuItem(request.POST, request.FILES)
             if form.is_valid():
-                form.save()
+                # form.save()
+                # return redirect('manage-menu')
+                category_item = form.save()
+                return redirect(category_item.get_absolute_url())
         else:
             form = AddMenuItem()
         context = {

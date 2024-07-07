@@ -8,7 +8,14 @@ urlpatterns = [
     path('book/', views.book, name='book'),
 
     # menu
-    path('menu/<str:selected_category>/', views.menu, name='menu'),
+    # path('menu/<slug:selected_category>?query=foodname', views.menu, name='menu-category'),
+    path('menu/<slug:selected_category>/', views.menu, name='menu-category'),
+
+
+
+    # persian slug
+    # re_path(r'category/(?P<slug>[\w-]+)/restaurants/$', views.category_restaurants_by_slug,
+    #         name='category-slug-restaurants'),
 
     # not important
     path('mock/', views.mock_all, name='mock-all'),
@@ -27,9 +34,11 @@ urlpatterns = [
 
 
     # staff_add_part
+    path('manage-menu/', views.manage_view, name='manage-menu'),
+    path('manage-menu/add-category/', views.staff_add_category, name='add-menu-categories'),
+    path('manage-menu/add-item/', views.add_menu_item, name='add-menu-item'),
 
-    path('add_category/', views.staff_add_category, name='add_menu_categories'),
-    path('add_item/', views.add_menu_item, name='add_menu_item'),
-    path('manage_menu/', views.manage_view, name='manage'),
+
+    path('menu/<slug:slug>/', views.menu, name='menu-category')
 ]
 

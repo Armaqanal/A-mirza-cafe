@@ -20,12 +20,20 @@ class Order(DateFieldsMixin, models.Model):
         last_unpaid_order, new_unpaid_order = cls.objects.get_or_create(customer_id=customer_id, is_paid=False)
         return last_unpaid_order or new_unpaid_order
 
+    def update_from_cleaned_data(self, cleaned_data: dict):
+        self.customer = cleaned_data['customer']
+        self.is_paid = True
+        self.save()
+
     def save(self, *args, **kwargs):
         if self.pk:
             self.calculate_total_order_item_price()
         super().save(*args, **kwargs)
 
     # TODO: order_item's price must be refreshed all the time until the order get paid
+
+    def __str__(self):
+        return f"Order No: {self.id}"
 
 
 class OrderItem(DateFieldsMixin, models.Model):
@@ -41,9 +49,19 @@ class OrderItem(DateFieldsMixin, models.Model):
         related_name='order_items',
     )
 
+    def update_from_cleaned_data(self, cleaned_data: dict):
+        self.price = cleaned_data['price']
+        self.discounted_price = cleaned_data['discounted_price']
+        self.quantity = cleaned_data['quantity']
+        self.menu_item = cleaned_data['menu_item']
+        self.order = cleaned_data['order']
+        self.save()
+
     def save(self, *args, **kwargs):
-        self.price = self.menu_item.price
-        self.discounted_price = self.menu_item.discounted_price
+        if not self.pk:
+            self.price = self.menu_item.price
+            self.discounted_price = self.menu_item.discounted_price
         self.total_discounted_price = self.quantity * self.discounted_price
+        # TODO: don't let the discounted_price to become greater than 'Price' in updates
         super().save(*args, **kwargs)
         self.order.save()

@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-oj&$jqnf*cmyi)l((u^z4o5lc78h@*3v_%%dd8*7u2#6*2)1-x
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # 3rd party apps
-    # "debug_toolbar",  # django-debug-toolbar
+    "debug_toolbar",  # django-debug-toolbar
 
     # my apps
     'menu',
@@ -46,8 +46,6 @@ INSTALLED_APPS = [
     'user',
     'accounts'
 ]
-# AUTH_USER_MODEL = "accounts.User"
-# ACCOUNT_USER_MODEL_USERNAME_FIELD = "phone_number"
 
 MIDDLEWARE = [
     # django-debug-toolbar
@@ -142,6 +140,8 @@ INTERNAL_IPS = [
 ]
 
 AUTH_USER_MODEL = "user.User"
-
-
-
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'accounts.auth_backends.AMirzaBackend',
+]

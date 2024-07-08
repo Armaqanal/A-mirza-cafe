@@ -34,5 +34,5 @@ urlpatterns = [
 
     # cbv order/order item
     path('order/create', views.AddOrderView.as_view(), name='create_order'),
-    path('order/edit', views.EditOrderView.as_view(), name='update_order'),
+    path('edit/', views.EditOrderView, name='update_order'),
 ]

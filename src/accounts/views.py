@@ -1,61 +1,46 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.views.generic import View
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView, LogoutView
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
 
+from user.models import Customer
 from . import forms
 from .forms import CustomerRegisterForm
 
 
-def login_view(request):
-    if request.user.is_authenticated:
-        return redirect('website-home')
+class AMirzaLoginView(LoginView):
+    template_name = 'accounts/login.html'
+    next_page = reverse_lazy('website-home')
+    authentication_form = forms.LoginForm
+    redirect_authenticated_user = True
 
-    if request.method == 'POST':
-        form = forms.LoginForm(request.POST)
-        if form.is_valid():
-            user = authenticate(
-                username=form.cleaned_data['username'],
-                password=form.cleaned_data['password'],
-            )
-            if user is not None:
-                login(request, user)
-                return redirect('website-home')
-            # else:
-            #     return HttpResponse('invalid login')
-        else:
-            return redirect('accounts:login')
-    return render(request, 'accounts/login.html')  # context={'form': form})
+    def form_valid(self, form):
+        response = super(AMirzaLoginView, self).form_valid(form)
+        messages.success(self.request, f"Welcome dear '{str(self.request.user)}'")
+        return response
 
-
-@login_required
-def logout_view(request):
-    logout(request)
-    return redirect('website-home')
-
-
-class RegisterView(View):
-    form_class = CustomerRegisterForm
-
-    def get(self, request, *args, **kwargs):
-        context = {
-            'form': self.form_class()
-        }
-        return render(request, 'accounts/register.html', context)
-
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST, request.FILES)
-        if form.is_valid():
-            print('*' * 200, form)
-            try:
-                form.save()
-            except ValueError:
-                form.errors['No username'] = 'Username, Email or password is needed'
-            else:
-                return redirect('accounts:login')
+    def form_invalid(self, form):
         for error, message in form.errors.items():
-            messages.error(request, message)
+            messages.error(self.request, message)
+        return super(AMirzaLoginView, self).form_invalid(form)
 
-        context = {'form': form}
-        return render(request, 'accounts/register.html', context)
+
+class AMirzaLogoutView(LoginRequiredMixin, LogoutView):
+    next_page = reverse_lazy('website-home')
+
+
+class RegisterView(CreateView):
+    model = Customer
+    template_name = 'accounts/register.html'
+    form_class = CustomerRegisterForm
+    success_url = reverse_lazy('accounts:login')
+
+    def form_valid(self, form):
+        messages.success(self.request, f"Your account has been created successfully!")
+        return super(RegisterView, self).form_valid(form)
+
+    def form_invalid(self, form):
+        for error, message in form.errors.items():
+            messages.error(self.request, message)
+        return super(RegisterView, self).form_invalid(form)

@@ -1,0 +1,17 @@
+{% extends 'website/base.html' %}
+
+{% block content %}
+    <h1> My Order</h1>
+    <ul>
+        {% for order in orders %}
+        <li>
+            {{ order.order_item }} ({{ order.quantity }})
+            <br>
+            {{ order.price }}
+        </li>
+        {% empty %}
+        <li>No orders yet.</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'create_order' %}">Create a new order</a>
+{% endblock %}

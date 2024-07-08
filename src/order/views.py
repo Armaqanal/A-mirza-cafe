@@ -4,6 +4,8 @@ import datetime
 
 from django.db.models import Count, Sum
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views import View
+
 from .models import Order, OrderItem
 from user.models import Customer
 from menu.models import MenuItem
@@ -14,6 +16,9 @@ from .models import Order, OrderItem
 from .ultis import total_sales_by_year_month_day, total_sales_by_year, top_year_based_on_sales, \
     total_sales_by_month_year, top_year_month_based_on_sales, top_sales_by_year_month_day,demography_items
 import csv
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import CreateView
 
 
 def cart(request):
@@ -265,7 +270,29 @@ def customer_orders_view(request):
     return render(request, 'customer_orders.html', context)
 
 
+# cbv order/order item
+class AddOrderView(View):
+    model = Order
+    template_name = 'order/add_order.html'
+    field = '__all__'
+    login_url = '/login/'
 
 
+class EditOrderView(View):
+    model = Order
+    template_name = 'order/edit_order.html'
+    field = '__all__'
+
+
+class AddItemView(View):
+    model = OrderItem
+    template_name = 'order/add_item.html'
+    field = '__all__'
+
+
+class EditItemView(View):
+    model = OrderItem
+    template_name = 'order/edit_item.html'
+    field = '__all__'
 
 

@@ -51,6 +51,7 @@ class AMirzaUserAdmin(UserAdmin):
     search_fields = ("email",)
     ordering = ("email",)
 
+
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = ['username', 'is_staff', 'is_superuser']
@@ -59,7 +60,10 @@ class UserAdmin(admin.ModelAdmin):
     #     (None, {'fields': ('email', 'username', 'first_name', 'password')}),
     #     ('Permissions', {'fields': ('is_staff', 'is_active')}),
     # )
-admin.site.register(User, AMirzaUserAdmin)
+
+
+# admin.site.register(User, AMirzaUserAdmin)
+
 
 class CustomerAdmin(AMirzaUserAdmin):
     add_form = CustomerCreationForm

@@ -1,13 +1,10 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse
-import datetime
 
 from django.db.models import Count, Sum
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 
-from .models import Order, OrderItem
-from user.models import Customer
 from menu.models import MenuItem
 from user.models import Customer
 
@@ -17,8 +14,11 @@ from .ultis import total_sales_by_year_month_day, total_sales_by_year, top_year_
     total_sales_by_month_year, top_year_month_based_on_sales, top_sales_by_year_month_day,demography_items
 import csv
 
+from django.views.generic import UpdateView, CreateView, ListView
+from .models import Order
+from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView
 
 
 def cart(request):
@@ -153,7 +153,7 @@ def total_sales_by_date(request):
     sales_by_month_year_day = None
     best_year = None
     best_year_month = None
-    best_year_month_day = Nonedata_items
+    best_year_month_day = None
     if request.method == 'POST':
         form = TotalSalesFilter(request.POST)
         if form.is_valid():
@@ -232,32 +232,6 @@ def total_sales_by_year_month_day_csv(request):
     return response
 
 
-# def add_menu_item_to_cart(request, menu_item_id=None):
-#     print(request.COOKIES.get('username'), menu_item_id)
-#
-#     username = request.session.get('username')
-#     customer = get_object_or_404(Customer, username=username)
-#
-#     selected_order = MenuItem.objects.get(id=order)
-#     print(selected_order)
-#
-#     # Find the online customer
-#     online_customer = Customer.objects.get(is_online=True)
-#
-#     # Find the  online unpaid order
-#     unpaid_order = Order.objects.filter(customer=online_customer, is_paid=False).first()
-#
-#     order_item, created = OrderItem.objects.get_or_create(
-#         order=unpaid_order,
-#         menu_item=selected_order,
-#         defaults={'quantity': 1}
-#     )
-#     if not created:
-#         order_item.quantity += 1
-#         order_item.save()
-#     return redirect('menu', menu_item_id)
-
-
 def customer_orders_view(request):
     customer_id = request.session.get('customer_id')
     customer_orders = Order.objects.filter(customer_id=customer_id).annotate(
@@ -271,28 +245,33 @@ def customer_orders_view(request):
 
 
 # cbv order/order item
-class AddOrderView(View):
+class AddOrderView(CreateView):
     model = Order
-    template_name = 'order/add_order.html'
-    field = '__all__'
-    login_url = '/login/'
+    template_name = 'order/create_order.html'
+    form_class = AddOrderForm
+
+    @login_required
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get_success_url(self):
+        return redirect('order_list')
 
 
-class EditOrderView(View):
+@login_required
+class EditOrderView(LoginRequiredMixin, UpdateView):
     model = Order
     template_name = 'order/edit_order.html'
-    field = '__all__'
+    fields = '__all__'
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset=queryset)
+        if obj.customer != self.request.user:
+            return redirect('order_list')
+
+    def get_success_url(self):
+        return reverse_lazy('order_list')
 
 
-class AddItemView(View):
-    model = OrderItem
-    template_name = 'order/add_item.html'
-    field = '__all__'
-
-
-class EditItemView(View):
-    model = OrderItem
-    template_name = 'order/edit_item.html'
-    field = '__all__'
 
 

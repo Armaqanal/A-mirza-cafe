@@ -1,57 +1,25 @@
-{% extends 'website/base.html' %}
-
-{% block content %}
-    <table class="table">
-        <thead class="thead-dark">
-        <tr>
-            <th scope="col">ORDER LIST</th>
-            <th scope="col">
-                <form action="{% url "order_list" %}" method="get">
-                    <input type="hidden" name="ordering" value="customer">
-                    <input type="submit" value="CUSTOMER">
-                </form>
-            </th>
-            <th scope="col">
-                <form action="{% url "order_list" %}" method="get">
-                    <input type="hidden" name="ordering" value="menu_item">
-                    <input type="submit" value="MENU_ITEM">
-                </form>
-            </th>
-            <th scope="col">
-                <form action="{% url "order_list" %}" method="get">
-                    <input type="hidden" name="ordering" value="quantity">
-                    <input type="submit" value="QUANTITY">
-                </form>
-            </th>
-            <th scope="col">
-                <form action="{% url "order_list" %}" method="get">
-                    <input type="hidden" name="ordering" value="price">
-                    <input type="submit" value="PRICE">
-                </form>
-            </th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for order_list in object_list %}
-
-
-            <tr>
-                <th scope="row">{{ loop.counter }}</th>
-                <td>{{ order_list.customer }}</td>
-                <td>{{ order_list.menu_item}}</td>
-                <td>{{ order_list.quantity }}</td>
-                 <td>{{ order_list.price }}</td>
-
-
-                <td>
-                    {% if request.user.is_staff %}
-                        <a href="{% url 'order_list-update' order_list.id %}">Edit</a>
-                        <a href="{% url 'order_list-add' order_list.id %}" class="add">ADD</a>
-                    {% endif %}
-                </td>
-            </tr>
+<!-- order_list.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order List</title>
+</head>
+<body>
+    <h1>Order List</h1>
+    <ul>
+        {% for order in object_list %}
+            <li>
+                Order #{{ order.id }} - {{ order.customer.name }} ({{ order.date_created }})
+                <ul>
+                    <li>Items:</li>
+                    {% for item in order.items.all %}
+                        <li>{{ item.product.name }} (x{{ item.quantity }})</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% empty %}
+            <li>No orders found.</li>
         {% endfor %}
-        </tbody>
-    </table>
-{% endblock %}
+    </ul>
+</body>
+</html>

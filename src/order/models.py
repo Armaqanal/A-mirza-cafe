@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Sum
 from menu.models import MenuItem
 from user.models import DateFieldsMixin, Customer
+from django.urls import reverse_lazy
 
 
 class Order(DateFieldsMixin, models.Model):
@@ -11,8 +12,18 @@ class Order(DateFieldsMixin, models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     is_paid = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f'order {self.id}-{self.customer}'
+
     def calculate_total_order_item_price(self):
         self.total_order_item_prices = self.order_items.aggregate(sum=Sum('total_discounted_price'))['sum']
+
+    # class base view
+    # def get_absolute_url(self):
+    #     return reverse_lazy("order:detail", kwarg={"pk": self.id})
+    #
+    # def __str__(self):
+    #     return self.customer
 
     @classmethod
     def get_unpaid_order(cls, customer_id=61):

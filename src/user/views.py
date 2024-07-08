@@ -6,6 +6,7 @@ from menu.forms import  AddMenuItem, AddCategoryForm
 from .models import Customer, Staff
 
 
+
 def staff_profile(request, staff_username):
     staff = get_object_or_404(Staff, username=staff_username)
     context = {"staff": staff}
@@ -93,4 +94,5 @@ def add_menu_item(request):
     else:
         return HttpResponse("Access denied.")
     # TODO:ACCESS DENIED PAGE FOR REDIRECT HOMEPAGE
+
 

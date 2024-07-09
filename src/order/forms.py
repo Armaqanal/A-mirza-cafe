@@ -18,7 +18,13 @@ class AddOrderItemForm(EditOrderItemForm):
         }
 
 
-# class EditOrderForm(forms.ModelForm):
+class EditOrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = '__all__'
+        exclude = ['total_order_item_prices']
+
+
 class AddOrderForm(forms.ModelForm):
     is_paid = forms.BooleanField(initial=True, widget=forms.HiddenInput())
 

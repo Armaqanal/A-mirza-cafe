@@ -33,6 +33,7 @@ urlpatterns = [
          name='total_sales_by_year_month_day_csv'),
 
     # cbv order/order item
-    path('order/create', views.AddOrderView.as_view(), name='create_order'),
+    path('order/add', views.AddOrderView.as_view, name='create-order-form'),
     path('edit/', views.EditOrderView, name='update_order'),
+
 ]

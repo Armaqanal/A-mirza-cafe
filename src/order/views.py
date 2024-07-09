@@ -8,7 +8,7 @@ from django.views import View
 from menu.models import MenuItem
 from user.models import Customer
 
-from .forms import EditOrderItemForm, AddOrderItemForm, AddOrderForm, TotalSalesFilter
+from .forms import EditOrderItemForm, AddOrderItemForm, AddOrderForm, TotalSalesFilter, EditOrderForm
 from .models import Order, OrderItem
 from .ultis import total_sales_by_year_month_day, total_sales_by_year, top_year_based_on_sales, \
     total_sales_by_month_year, top_year_month_based_on_sales, top_sales_by_year_month_day,demography_items
@@ -17,8 +17,7 @@ import csv
 from django.views.generic import UpdateView, CreateView, ListView
 from .models import Order
 from django.urls import reverse_lazy
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 
 def cart(request):
@@ -244,33 +243,24 @@ def customer_orders_view(request):
     return render(request, 'customer_orders.html', context)
 
 
-# cbv order/order item
-class AddOrderView(CreateView):
+# cbv order/order
+class AddOrderView(PermissionRequiredMixin, CreateView):
+    permission_required = 'order.add_order'
     model = Order
-    template_name = 'order/create_order.html'
     form_class = AddOrderForm
+    template_name = 'order/create_order_form.html'
 
-    @login_required
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
-    def get_success_url(self):
-        return redirect('order_list')
+    success_url = reverse_lazy('order_form')
 
 
-@login_required
-class EditOrderView(LoginRequiredMixin, UpdateView):
-    model = Order
-    template_name = 'order/edit_order.html'
-    fields = '__all__'
+class EditOrderView(PermissionRequiredMixin, UpdateView):
+    permission_required = 'order.edit_order'
+    model = order
+    form_class = EditOrderForm
+    template_name = 'order/edit_order_form.html'
 
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset=queryset)
-        if obj.customer != self.request.user:
-            return redirect('order_list')
 
-    def get_success_url(self):
-        return reverse_lazy('order_list')
+
 
 
 

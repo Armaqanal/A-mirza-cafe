@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-from .models import Order
+# from .models import Order
 
 
 class AddOrderViewTests(TestCase):

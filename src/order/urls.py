@@ -13,7 +13,7 @@ urlpatterns = [
     # order-management
     path('manage-orders/', views.manage_orders, name='manage-orders'),
     path('manage-orders/add-order', views.add_order, name='add-order'),
-    path('manage-orders/edit-order/<int:order_id>/', views.edit_order, name='edit-order'),
+    # path('manage-orders/edit-order/<int:order_id>/', views.edit_order, name='edit-order'),
     path('manage-orders/delete-order/<int:order_id>/', views.delete_order, name='delete-order'),
 
     # order-item-management
@@ -33,7 +33,7 @@ urlpatterns = [
          name='total_sales_by_year_month_day_csv'),
 
     # cbv order/order item
-    path('order/add', views.AddOrderView.as_view, name='create-order-form'),
-    path('edit/', views.EditOrderView, name='update_order'),
+    path('order/add', views.AddOrderView.as_view(), name='create-order-form'),
+    path('edit/<int:order_id>/', views.EditOrderView.as_view(), name='edit-order'),
 
 ]

@@ -76,19 +76,19 @@ def add_order(request):
     return render(request, 'order/order_form.html', context)
 
 
-def edit_order(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
-    form = AddOrderForm(instance=order)
-    if request.method == 'POST':
-        form = AddOrderForm(request.POST)
-        if form.is_valid():
-            order.update_from_cleaned_data(form.cleaned_data)
-            return redirect('manage-orders')
-    context = {
-        'order_id': order_id,
-        'form': form
-    }
-    return render(request, 'order/order_form.html', context)
+# def edit_order(request, order_id):
+#     order = get_object_or_404(Order, id=order_id)
+#     form = AddOrderForm(instance=order)
+#     if request.method == 'POST':
+#         form = AddOrderForm(request.POST)
+#         if form.is_valid():
+#             order.update_from_cleaned_data(form.cleaned_data)
+#             return redirect('manage-orders')
+#     context = {
+#         'order_id': order_id,
+#         'form': form
+#     }
+#     return render(request, 'order/order_form.html', context)
 
 
 def delete_order(request, order_id):
@@ -248,17 +248,26 @@ class AddOrderView(PermissionRequiredMixin, CreateView):
     permission_required = 'order.add_order'
     model = Order
     form_class = AddOrderForm
-    template_name = 'order/create_order_form.html'
+    template_name = 'order/order_form.html'
 
-    success_url = reverse_lazy('order_form')
+    success_url = reverse_lazy('order_form.html')
+
+    def has_permission(self):
+        return self.request.user.is_staff
 
 
 class EditOrderView(PermissionRequiredMixin, UpdateView):
     permission_required = 'order.edit_order'
-    model = order
+    model = Order
     form_class = EditOrderForm
-    template_name = 'order/edit_order_form.html'
+    template_name = 'order/order_form.html'
 
+    def has_permission(self):
+        return self.request.user.is_staff
+
+    def get_object(self, queryset=None):
+        order_id = self.kwargs.get('order_id')
+        return get_object_or_404(Order, id=order_id)
 
 
 

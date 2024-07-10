@@ -69,7 +69,8 @@ class MenuItem(DateFieldsMixin, models.Model):
                 unique_slug = f"{self.slug}-{num}"
                 num += 1
             self.slug = unique_slug
-        super().save(args, kwargs)
+        super().save(*args,
+                     **kwargs)
 
     def get_absolute_url(self):
         return reverse('menu-category', kwargs={'slug': self.menu_category.slug})

@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # 3rd party apps
-    "debug_toolbar",  # django-debug-toolbar
+    # "debug_toolbar",  # django-debug-toolbar
     "crispy_forms",
     "crispy_bootstrap4",
 

@@ -14,7 +14,7 @@
         </div>
 
         <div class="search-bar justify-content-center">
-            <form action="{% url 'menu-category' selected_category %}" method="get">
+            <form action="{% url 'menu-category' 'all' %}" method="get">
                 {#            <div class="row">#}
 
                 {#                <div class="col-md-8">#}
@@ -48,7 +48,7 @@
                         {% else %}
                     <li class="">
                 {% endif %}
-                <a href="{% url 'menu-category' category.slug %} ">{{ category.slug }}</a>
+                <a href="{% url 'menu-category' category.slug %}">{{ category.slug }}</a>
             {% endfor %}
             </li>
         </ul>

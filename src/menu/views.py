@@ -1,11 +1,11 @@
 import os
 import random
 import faker
-from django.contrib.auth.decorators import login_required
+
 from django.http import HttpResponseRedirect
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.views.generic import CreateView, ListView
 from django.urls import reverse_lazy
 from .forms import AddMenuItem, AddCategoryForm
@@ -185,7 +185,7 @@ class CategoryCreateView(PermissionRequiredMixin, CreateView):
 
     def handle_no_permission(self):
         return HttpResponseRedirect(
-            reverse_lazy('accounts:login'))  # TODO When my user is logged in,This redirect me to home page
+            reverse_lazy('accounts:register'))
 
 
 # *************************************MenuItem_create_view_by_staff*********************
@@ -194,18 +194,18 @@ class MenuItemCreateView(PermissionRequiredMixin, CreateView):
     model = MenuItem
     form_class = AddMenuItem
     template_name = 'menu/menuitem_form.html'
+    # login_url = reverse_lazy('accounts:register')
 
     def has_permission(self):
         return self.request.user.is_staff
 
     def handle_no_permission(self):
-        return HttpResponseRedirect(
-            reverse_lazy('accounts:login'))  # TODO When my user is logged in,This redirect me to home page
+        return redirect(
+            reverse_lazy('accounts:register'))
 
 
 # **************************************Menu***********************************************
 class MenuListView(ListView):
-    # model = MenuItem
     template_name = 'menu/menu_list.html'
     context_object_name = 'menu_items'
 

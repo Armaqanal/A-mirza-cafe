@@ -21,6 +21,7 @@
 
     <!-- templates -->
     {% block css %}
+
     {% endblock css %}
     <link rel="stylesheet" href="{% static 'user/css/staff.css' %}">
     <link rel="stylesheet" href="{% static 'user/css/all_staffs.css' %}">
@@ -63,10 +64,6 @@
         {% include 'website/sections/header_section.html' %}
     {% endblock header %}
     <!-- end header section -->
-
-    <!-- display messages -->
-    {% include 'website/sections/message_display.html' %}
-    <!-- display messages -->
 
     <!-- slider section -->
     {% block slide-section %}

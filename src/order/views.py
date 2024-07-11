@@ -164,8 +164,8 @@ def total_sales_by_date(request):
     sales_by_month_year_day = None
     best_year = None
     best_year_month = None
-    best_year_month_day = None
-    if request.method == "POST":
+    best_year_month_day = Nonedata_items
+    if request.method == 'POST':
         form = TotalSalesFilter(request.POST)
         if form.is_valid():
             filter_type = form.cleaned_data["time_choice"]
@@ -194,6 +194,15 @@ def total_sales_by_date(request):
             "data_items": list(demography_items()),
         },
     )
+    return render(request, 'order/dashboard.html', {
+        'form': form,
+        'sales_by_year': sales_by_year,
+        'sales_by_month_year': sales_by_month_year,
+        'sales_by_month_year_day': sales_by_month_year_day,
+        'best_year': best_year,
+        'best_year_month': best_year_month,
+        'best_year_month_day': best_year_month_day
+    })
 
 
 @staff_member_required

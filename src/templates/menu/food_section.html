@@ -20,7 +20,8 @@
         </div>
 
         <div class="search-bar justify-content-center">
-            <form action="{% url 'menu-category' selected_category %}" method="get">
+{#            <form action="{% url 'menu-category' selected_category %}" method="get">#}
+            <form action="{% url 'menu-category' 'all' %}" method="get">
 
                 <div class="input-group my-3">
                     <input type="text" class="form-control input-text m-0" placeholder="Search Food Name" name="q"

@@ -3,6 +3,12 @@
 
 {% block css %}
     <link rel="stylesheet" href="{% static 'menu/css/menu.css' %}">
+    <style>
+        .active a {
+            color: #ffbe33;
+            font-weight: bold;
+        }
+    </style>
 {% endblock css %}
 
 <section class="food_section layout_padding-bottom">
@@ -15,9 +21,6 @@
 
         <div class="search-bar justify-content-center">
             <form action="{% url 'menu-category' selected_category %}" method="get">
-                {#            <div class="row">#}
-
-                {#                <div class="col-md-8">#}
 
                 <div class="input-group my-3">
                     <input type="text" class="form-control input-text m-0" placeholder="Search Food Name" name="q"
@@ -27,10 +30,6 @@
                                 class="fa fa-search"></i></button>
                     </div>
                 </div>
-
-                {#                </div>#}
-
-                {#            </div>#}
 
             </form>
         </div>
@@ -43,7 +42,7 @@
             <a href="{% url 'menu-category' 'all' %}">All</a>
             </li>
             {% for category in categories %}
-                {% if selected_category == category.label %}
+                {% if selected_category == category.slug %}
                     <li class="active">
                         {% else %}
                     <li class="">

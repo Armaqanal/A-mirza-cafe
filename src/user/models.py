@@ -161,18 +161,18 @@ def delete_customer_profile_photo(sender, instance: User, **kwargs):
             os.remove(instance.photo.path)
 
 
-@receiver(pre_save, sender=User)
-def delete_old_customer_profile_photo(sender, instance: User, **kwargs):
-    if not instance.id:
-        return False
-
-    try:
-        old_person = User.objects.get(id=instance.id)
-    except Customer.DoesNotExist:
-        return False
-
-    # TODO: What if my 'upload_to' uses a method that generate file name from username?
-    # TODO: What if the user's photo is 'default_profile_?
-    if old_person.photo:
-        if os.path.isfile(old_person.photo.path):
-            os.remove(old_person.photo.path)
+# @receiver(pre_save, sender=User)
+# def delete_old_customer_profile_photo(sender, instance: User, **kwargs):
+#     if not instance.id:
+#         return False
+#
+#     try:
+#         old_person = User.objects.get(id=instance.id)
+#     except Customer.DoesNotExist:
+#         return False
+#
+#     # TODO: What if my 'upload_to' uses a method that generate file name from username?
+#     # TODO: What if the user's photo is 'default_profile_?
+#     if old_person.photo:
+#         if os.path.isfile(old_person.photo.path):
+#             os.remove(old_person.photo.path)

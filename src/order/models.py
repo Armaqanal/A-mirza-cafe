@@ -25,6 +25,10 @@ class Order(DateFieldsMixin, models.Model):
     def __str__(self):
         return self.customer
 
+
+
+    class Meta:
+        permissions = [('manager_add_order', 'manager can add order')]
     @classmethod
     def get_unpaid_order(cls, customer_id=61):
         """"""

@@ -13,7 +13,7 @@ urlpatterns = [
     path('manage-orders/', views.ManageOrderView.as_view(), name='manage-orders'),
     path('manage-orders/add-order', views.add_order, name='add-order'),
     path('manage-orders/edit-order/<int:order_id>/', views.edit_order, name='edit-order'),
-    path('manage-orders/<pk:pk>/delete/', views.DeleteOrderView.as_view(), name='delete-order'),
+    path('manage-orders/<int:pk>/delete/', views.DeleteOrderView.as_view(), name='delete-order'),
 
     # order-item-management
     path('manage-orders/<int:order_id>/manage-order-items/', views.ManageOrderItemView.as_view(), name='manage-order-items'),
@@ -21,7 +21,7 @@ urlpatterns = [
          name='add-order-item'),
     path('manage-orders/<int:order_id>/manage-order-items/<int:order_item_id>/edit-order-item/', views.edit_order_item,
          name='edit-order-item'),
-    path('manage-orders/<pk:order_id>/manage-order-items/<pk:pk>/delete/',
+    path('manage-orders/<int:order_id>/manage-order-items/<int:pk>/delete/',
          views.DeleteOrderItem.as_view(), name='delete-order-item'),
 
     # manage-dashboard

@@ -1,4 +1,5 @@
 from django.contrib.admin.views.decorators import staff_member_required
+# from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse
 
 from django.db.models import Count, Sum
@@ -14,7 +15,7 @@ from .ultis import total_sales_by_year_month_day, total_sales_by_year, top_year_
     total_sales_by_month_year, top_year_month_based_on_sales, top_sales_by_year_month_day,demography_items
 import csv
 
-from django.views.generic import UpdateView, CreateView, ListView
+from django.views.generic import UpdateView, CreateView
 from .models import Order
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -268,9 +269,4 @@ class EditOrderView(PermissionRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         order_id = self.kwargs.get('order_id')
         return get_object_or_404(Order, id=order_id)
-
-
-
-
-
 

@@ -1,9 +1,9 @@
-from django.test import TestCase
-from django.test.client import RequestFactory
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
-from user.models import Customer
+from django.test import TestCase
+from django.test.client import RequestFactory, Client
+from django.urls import reverse
 
+from user.models import Customer
 from .forms import LoginForm, CustomerRegisterForm
 
 User = get_user_model()
@@ -89,3 +89,59 @@ class CustomerRegisterFormTest(TestCase):
 
         self.assertFalse(form.is_valid())
         self.assertIn('username', form.errors)
+
+
+class AMirzaLoginView(TestCase):
+    def setUp(self):
+        data = {
+            'username': 'username_test2',
+            'email': 'test@test.test2',
+            'phone': '09123456782',
+            'password': 'p@ssw0rd_test',
+            'first_name': 'Jane',
+            'last_name': 'Doe',
+            'gender': 'F',
+            'date_of_birth': '1995-10-12'
+        }
+
+        customer_data = {
+            **data,
+            **{'balance': 800}
+        }
+        staff_data = {
+            **data,
+            **{'salary': 5000, 'role': 'barista'}
+        }
+        self.customer = Customer.objects.create(**customer_data)
+        self.login_url = reverse('accounts:login')
+        self.client = Client()
+
+    def test_login_success(self):
+        # get login page
+        response = self.client.get(self.login_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'accounts/login.html')
+
+        # post login data
+        data = {
+            'username': 'username_test2',
+            'password': 'p@ssw0rd_test'
+        }
+        response = self.client.post(self.login_url, data)
+        self.assertEqual(response.status_code, 200)
+
+    def test_login_failure(self):
+        data = {
+            'username': 'username_test2',
+            'password': 'p@ssw0rd_wrong'
+        }
+        response = self.client.post(self.login_url, data)
+        self.assertEqual(response.status_code, 200)
+
+
+class AMirzaLogoutView(TestCase):
+    ...
+
+
+class RegisterView(TestCase):
+    ...

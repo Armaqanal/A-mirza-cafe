@@ -164,7 +164,7 @@ def total_sales_by_date(request):
     sales_by_month_year_day = None
     best_year = None
     best_year_month = None
-    best_year_month_day = Nonedata_items
+    best_year_month_day = None
     if request.method == 'POST':
         form = TotalSalesFilter(request.POST)
         if form.is_valid():

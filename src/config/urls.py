@@ -18,14 +18,19 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import TemplateView
 
 urlpatterns = [
     # django debug toolbar
     path("__debug__/", include("debug_toolbar.urls")),
 
+    # website
+    path('', TemplateView.as_view(template_name='website/pages/home.html'), name='website-home'),
+    path('about/', TemplateView.as_view(template_name='website/pages/about.html'), name='website-about'),
+
     # others
     path('admin/', admin.site.urls),
-    path('', include('menu.urls')),
+    path('menu/', include('menu.urls')),
     path('order/', include('order.urls')),
     path('accounts/', include('accounts.urls')),
 

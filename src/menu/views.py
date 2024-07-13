@@ -10,7 +10,7 @@ from django.views.generic import CreateView, ListView
 from django.urls import reverse_lazy
 from .forms import AddMenuItem, AddCategoryForm
 from .models import MenuCategory, MenuItem
-from user.models import Staff, Customer
+from accounts.models import Staff, Customer
 
 
 def home(request):
@@ -102,7 +102,7 @@ def mock_staffs(request, count=5):
 
         new_staff.photo = target_photo_path.removeprefix('media/')
         new_staff.save()
-    return redirect('all-staffs')
+    return redirect('accounts:all-staffs')
 
 
 def mock_customers(request, count=5):
@@ -132,7 +132,7 @@ def mock_customers(request, count=5):
 
         new_customer.photo = target_photo_path.removeprefix('media/')
         new_customer.save()
-    return redirect('all-customers')
+    return redirect('accounts:all-customers')
 
 
 def remove_all_records(model, *args, redirect_to='website-home'):

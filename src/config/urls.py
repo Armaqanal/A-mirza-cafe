@@ -26,7 +26,6 @@ urlpatterns = [
     # others
     path('admin/', admin.site.urls),
     path('', include('menu.urls')),
-    path('user/', include('user.urls')),
     path('order/', include('order.urls')),
     path('accounts/', include('accounts.urls')),
 

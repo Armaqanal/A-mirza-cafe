@@ -1,9 +1,8 @@
 from django.utils import timezone
 from django.test import TestCase
-from .models import User, Customer, Staff, Address
+from ..models import User, Customer, Staff, Address
 
 
-# Create your tests here.
 class UserTest(TestCase):
     def setUp(self):
         self.address = Address.objects.create(

@@ -5,7 +5,7 @@ from django.db.models.query import QuerySet
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from menu.models import MenuItem
-from user.models import Customer
+from accounts.models import Customer
 from django.views.generic.base import TemplateView,RedirectView
 from django.views.generic.edit import DeleteView
 from django.views.generic.list import ListView
@@ -164,7 +164,7 @@ def total_sales_by_date(request):
     sales_by_month_year_day = None
     best_year = None
     best_year_month = None
-    best_year_month_day = Nonedata_items
+    best_year_month_day = None
     if request.method == 'POST':
         form = TotalSalesFilter(request.POST)
         if form.is_valid():

@@ -3,7 +3,7 @@ from django.core.validators import MaxValueValidator
 from django.db import models
 from django.db.models import Sum
 from menu.models import MenuItem
-from user.models import DateFieldsMixin, Customer
+from accounts.models import DateFieldsMixin, Customer
 
 
 class Order(DateFieldsMixin, models.Model):

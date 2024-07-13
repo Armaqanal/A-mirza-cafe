@@ -1,11 +1,11 @@
 import datetime
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import CreateView
+from django.views.generic import CreateView, DetailView, TemplateView
 
 from . import forms
 from .forms import CustomerRegisterForm
@@ -49,6 +49,16 @@ class RegisterView(CreateView):
         return super(RegisterView, self).form_invalid(form)
 
 
+class ProfileView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'user/customer/customer_profile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileView, self).get_context_data(**kwargs)
+        context['customer'] = Customer.objects.get(id=self.request.user.id)
+        return context
+
+    def test_func(self):
+        return not self.request.user.is_staff
 
 
 def staff_profile(request, staff_username):

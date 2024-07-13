@@ -16,20 +16,20 @@
 
 <div class="formbold-main-wrapper">
     <div class="formbold-form-wrapper">
-        <form action="" method="POST">
+        <form action=" " method="POST">
             {% csrf_token %}
             <h1>Menu Categories</h1>
 
             <div class="formbold-email-subscription-form">
                 {{ form.label.errors }}
                 <input
-                    type="text"
-                    name="label"
-                    maxlength="100"
-                    required
-                    placeholder="Enter your category label"
-                    class="formbold-form-input"
-                    id="id_label"
+                        type="text"
+                        name="label"
+                        maxlength="100"
+                        required
+                        placeholder="Enter your category label"
+                        class="formbold-form-input"
+                        id="id_label"
                 />
                 <button class="formbold-btn">
                     Add

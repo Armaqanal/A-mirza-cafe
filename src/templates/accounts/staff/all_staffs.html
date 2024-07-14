@@ -27,7 +27,7 @@
                             <div class="rounded-top"
                                  style="height:120px; width: 100%; background-color: {{ colors|random }}"></div>
                             <div class="card-body text-center">
-                                <a href="{% url 'accounts:staff-profile' staff.username %}">
+                                <a href="{% url 'accounts:staff-profile' %}">
                                     {% if staff.photo %}
                                         <img src="{{ staff.photo.url }}"
                                              style="width:100px;margin-top:-65px" alt="User"

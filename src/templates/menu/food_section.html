@@ -20,8 +20,7 @@
         </div>
 
         <div class="search-bar justify-content-center">
-{#            <form action="{% url 'menu-category' selected_category %}" method="get">#}
-            <form action="{% url 'menu-category' 'all' %}" method="get">
+            <form action="{% url 'menu-category' selected_category %}" method="get">
 
                 <div class="input-group my-3">
                     <input type="text" class="form-control input-text m-0" placeholder="Search Food Name" name="q"
@@ -152,7 +151,7 @@
                     {% endfor %}
 
                 {% else %}
-                    <p class="">No Food Found</p>
+                    <p class="text-danger text-center font-weight-bold" style="height: 300px">No Food Found</p>
                 {% endif %}
 
             </div>

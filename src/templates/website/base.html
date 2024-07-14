@@ -19,11 +19,6 @@
     <!-- bootstrap core css -->
     <link rel="stylesheet" type="text/css" href="{% static 'website/css/bootstrap.css' %}"/>
 
-    <!-- templates -->
-    {% block css %}
-
-    {% endblock css %}
-    <link rel="stylesheet" href="{% static 'accounts/css/all_staffs.css' %}">
 
     <!--owl slider stylesheet -->
     <link rel="stylesheet" type="text/css"
@@ -45,6 +40,10 @@
     <!-- responsive style -->
     <link href="{% static 'website/css/responsive.css' %}" rel="stylesheet"/>
 
+    <!-- templates -->
+    {% block css %}
+
+    {% endblock css %}
 </head>
 
 {% block body %}

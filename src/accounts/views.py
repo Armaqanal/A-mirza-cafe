@@ -1,15 +1,16 @@
-import datetime
-
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView, TemplateView
+from django.views.generic import CreateView, TemplateView
 
 from . import forms
 from .forms import CustomerRegisterForm
 from .models import Customer, Staff
+
+User = get_user_model()
 
 
 class AMirzaLoginView(LoginView):
@@ -65,6 +66,10 @@ class StaffProfileView(LoginRequiredMixin, TemplateView):
         context = super(StaffProfileView, self).get_context_data(**kwargs)
         context['staff'] = get_object_or_404(Staff, id=self.request.user.id)
         return context
+
+
+class SuperuserProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'user/user_profile.html'
 
 
 def all_staffs_view(request):

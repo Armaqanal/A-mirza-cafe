@@ -13,4 +13,5 @@ urlpatterns = [
 
     path('staff/', views.all_staffs_view, name='all-staffs'),
     path('staff/profile/', views.StaffProfileView.as_view(), name='staff-profile'),
+    path('superuser/profile/', views.SuperuserProfileView.as_view(), name='superuser-profile'),
 ]

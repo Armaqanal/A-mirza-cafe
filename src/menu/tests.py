@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 # Create your tests here.
 from django.urls import reverse
-from user.models import Staff
+from accounts.models import Staff
 
 from .models import MenuItem, MenuCategory
 

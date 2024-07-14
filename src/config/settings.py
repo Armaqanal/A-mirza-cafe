@@ -46,8 +46,8 @@ INSTALLED_APPS = [
     # my apps
     'menu',
     'order',
-    'user',
-    'accounts'
+    'accounts',
+    'mock_data'
 ]
 
 MIDDLEWARE = [
@@ -142,7 +142,7 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-AUTH_USER_MODEL = "user.User"
+AUTH_USER_MODEL = "accounts.User"
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 

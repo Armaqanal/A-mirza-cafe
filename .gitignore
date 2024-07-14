@@ -1,7 +1,7 @@
 # A-Mirza project
 /src/media/**/*.png
 /src/media/**/*.jpg
-
+*initial.py
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

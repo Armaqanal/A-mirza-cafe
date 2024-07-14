@@ -1,3 +1,7 @@
+.active a {
+    color: #ffbe33;
+    font-weight: bold;
+}
 
 .btn:hover {
     color: #fff;

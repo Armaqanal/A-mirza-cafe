@@ -11,7 +11,7 @@
 {% endblock slide-section %}
 
 {% block content %}
-    <h1 class="my-3" style="text-align: center">All Staffs Page</h1>
+    <h1 class="my-3" style="text-align: center">All customers Page</h1>
 
     {# resource #}
     {# https://bootdey.com/snippets/view/User-grid #}
@@ -21,25 +21,25 @@
 
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 gutters-sm">
 
-                {% for staff in all_staffs %}
+                {% for customer in all_customers %}
                     <div class="col-3 mb-3">
                         <div class="card" style="height: 400px">
                             <div class="rounded-top"
                                  style="height:120px; width: 100%; background-color: {{ colors|random }}"></div>
                             <div class="card-body text-center">
-                                <a href="{% url 'staff-profile' staff.username %}">
-                                    {% if staff.photo %}
-                                        <img src="{{ staff.photo.url }}"
+                                <a href="{% url 'accounts:customer-profile' %}">
+                                    {% if customer.photo %}
+                                        <img src="{{ customer.photo.url }}"
                                              style="width:100px;margin-top:-65px" alt="User"
                                              class="img-fluid img-thumbnail rounded-circle border-0 mb-3">
                                     {% else %}
-                                        <img src="{% static 'user/images/default_profile_photo.png' %}"
+                                        <img src="{% static 'accounts/images/default_profile_photo.png' %}"
                                              style="width:100px;margin-top:-65px" alt="User"
                                              class="img-fluid img-thumbnail rounded-circle border-0 mb-3">
                                     {% endif %}
                                 </a>
-                                <h5 class="card-title">{{ staff.username }}</h5>
-                                <p class="text-secondary mb-1">Role: {{ staff.role|title }}</p>
+                                <h5 class="card-title">{{ customer.username }}</h5>
+                                <p class="text-secondary mb-1">balance: {{ customer.balance }}</p>
                             </div>
                             <div class="card-footer d-flex flex-row">
                                 <button class="btn btn-light btn-sm bg-white has-icon btn-block" type="button"><i

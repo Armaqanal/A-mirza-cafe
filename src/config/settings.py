@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     # my apps
     'menu',
     'order',
-    'accounts'
+    'accounts',
+    'mock_data'
 ]
 
 MIDDLEWARE = [

@@ -34,6 +34,8 @@ urlpatterns = [
     path('order/', include('order.urls')),
     path('accounts/', include('accounts.urls')),
 
+    # mock_data
+    path('', include('mock_data.urls'), name='mock-data'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

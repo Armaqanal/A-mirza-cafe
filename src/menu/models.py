@@ -44,7 +44,6 @@ class MenuItem(DateFieldsMixin, models.Model):
     inventory = models.PositiveSmallIntegerField(default=0)
     image = models.ImageField(
         upload_to=food_image_upload_to,
-        default='default_food_image.jpg',
         blank=True
     )
     menu_category = models.ForeignKey(

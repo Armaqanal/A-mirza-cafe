@@ -14,7 +14,7 @@
 {% endblock slide-section %}
 
 {% block content %}
-   
+
     <section class="food_section layout_padding-bottom">
         <div class="container">
             <div class="heading_container heading_center">
@@ -67,8 +67,12 @@
                                 <div class="box" style="height: 450px">
                                     <div>
                                         <div class="img-box">
-                                            <img src="{{ menu_item.image.url }}"
-                                                 alt="{{ menu_item.image.url }}">
+                                            {% if menu_item.image %}
+                                                <img src="{{ menu_item.image.url }}"
+                                                     alt="{{ menu_item.image.url }}">
+                                            {% else %}
+                                                <img src="{% static 'menu/images/' %}" alt="">
+                                            {% endif %}
                                         </div>
                                         <div class="detail-box">
                                             <h5>

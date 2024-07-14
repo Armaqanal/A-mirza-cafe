@@ -49,28 +49,22 @@ class RegisterView(CreateView):
         return super(RegisterView, self).form_invalid(form)
 
 
-class ProfileView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+class CustomerProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'user/customer/customer_profile.html'
 
     def get_context_data(self, **kwargs):
-        context = super(ProfileView, self).get_context_data(**kwargs)
-        context['customer'] = Customer.objects.get(id=self.request.user.id)
+        context = super(CustomerProfileView, self).get_context_data(**kwargs)
+        context['customer'] = get_object_or_404(Customer, id=self.request.user.id)
         return context
 
-    def test_func(self):
-        return not self.request.user.is_staff
 
+class StaffProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'user/staff/staff_profile.html'
 
-def staff_profile(request, staff_username):
-    staff = get_object_or_404(Staff, username=staff_username)
-    context = {"staff": staff}
-    response = render(request, 'user/staff/staff_profile.html', context)
-    response.set_cookie(
-        'username',
-        staff_username,
-        path='/',
-        expires=datetime.datetime.utcnow() + datetime.timedelta(minutes=10))
-    return response
+    def get_context_data(self, **kwargs):
+        context = super(StaffProfileView, self).get_context_data(**kwargs)
+        context['staff'] = get_object_or_404(Staff, id=self.request.user.id)
+        return context
 
 
 def all_staffs_view(request):
@@ -81,19 +75,6 @@ def all_staffs_view(request):
         "colors": colors
     }
     return render(request, 'user/staff/all_staffs.html', context)
-
-
-def customer_profile(request, customer_username):
-    customer = get_object_or_404(Customer, username=customer_username)
-    context = {'customer': customer}
-
-    response = render(request, 'user/customer/customer_profile.html', context)
-    response.set_cookie(
-        'username',
-        customer_username,
-        path='/',
-        expires=datetime.datetime.utcnow() + datetime.timedelta(minutes=10))
-    return response
 
 
 def all_customers_view(request):

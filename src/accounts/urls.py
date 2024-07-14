@@ -9,8 +9,8 @@ urlpatterns = [
     path('register/', views.RegisterView.as_view(), name='register'),
 
     path('customer/', views.all_customers_view, name='all-customers'),
-    path('customer/<str:customer_username>/', views.ProfileView.as_view(), name='customer-profile'),
+    path('customer/profile/', views.CustomerProfileView.as_view(), name='customer-profile'),
 
     path('staff/', views.all_staffs_view, name='all-staffs'),
-    path('staff/<str:staff_username>/', views.staff_profile, name='staff-profile'),
+    path('staff/profile/', views.StaffProfileView.as_view(), name='staff-profile'),
 ]

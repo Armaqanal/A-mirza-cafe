@@ -5,7 +5,7 @@ from django.db.models.query import QuerySet
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from menu.models import MenuItem
-from user.models import Customer
+from accounts.models import Customer
 from django.views.generic.base import TemplateView,RedirectView
 from django.views.generic.edit import DeleteView
 from django.views.generic.list import ListView

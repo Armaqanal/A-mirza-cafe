@@ -2,17 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # website
-    path('', views.home, name='website-home'),
-    path('about/', views.about, name='website-about'),
-    path('book/', views.book, name='book'),
 
     # menu
     # path('menu/<slug:selected_category>?query=foodname', views.menu, name='menu-category'),
-
-    # persian slug
-    # re_path(r'category/(?P<slug>[\w-]+)/restaurants/$', views.category_restaurants_by_slug,
-    #         name='category-slug-restaurants'),
 
     # not important
     path('mock/', views.mock_all, name='mock-all'),

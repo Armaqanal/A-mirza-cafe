@@ -42,7 +42,7 @@
                 </ul>
                 <div class="user_option">
                     {% if request.user.is_staff %}
-                        <a class="staff_link" href="{% url 'all-staffs' %}">
+                        <a class="staff_link" href="{% url 'accounts:all-staffs' %}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 48 48">
                                 <g fill="currentColor">
                                     <path d="M17 31v-2h2v2z"/>
@@ -53,7 +53,7 @@
                                 </g>
                             </svg>
                         </a>
-                        <a class="customer_link" href="{% url 'all-customers' %}">
+                        <a class="customer_link" href="{% url 'accounts:all-customers' %}">
                             <i class="fa fa-user" aria-hidden="true"></i>
                         </a>
 
@@ -138,16 +138,25 @@
                                 {% endif %}
                             </button>
                             <ul class="dropdown-menu dropdown-menu-dark ">
+
+                                <!-- profile -->
                                 <li>
-                                    {% if request.user.is_staff %}
-                                        <a class="dropdown-item m-0" href="{% url 'staff-profile' request.user.username %}">Profile</a>
+                                    {% if request.user.is_staff and request.user.is_superuser %}
+                                        <a class="dropdown-item m-0"
+                                           href="{% url 'accounts:superuser-profile' %}">
+                                    {% elif request.user.is_staff %}
+                                        <a class="dropdown-item m-0"
+                                           href="{% url 'accounts:staff-profile' %}">
                                     {% else %}
                                         <a class="dropdown-item m-0"
-                                           href="{% url 'customer-profile' request.user.username %}">Profile</a>
+                                           href="{% url 'accounts:customer-profile' %}">
                                     {% endif %}
+                                    Profile</a>
                                 </li>
-                                <li><a class="dropdown-item m-0" href="" >Change password</a></li>
-                                <li><a class="dropdown-item m-0" href="#"  >My Orders</a></li>
+                                <!-- profile -->
+
+                                <li><a class="dropdown-item m-0" href="">Change password</a></li>
+                                <li><a class="dropdown-item m-0" href="#">My Orders</a></li>
                                 <li>
                                     <form action="{% url 'accounts:logout' %}" method="post">
                                         {% csrf_token %}

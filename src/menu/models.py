@@ -5,7 +5,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.urls import reverse
 from django.utils.text import slugify
-from user.models import DateFieldsMixin
+from accounts.models import DateFieldsMixin
 
 
 class MenuCategory(DateFieldsMixin, models.Model):

@@ -1,10 +1,11 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import UserChangeForm
+from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 
-from user.models import Customer
+from .models import Customer, Staff
 
 User = get_user_model()
 
@@ -95,3 +96,27 @@ class CustomerRegisterForm(UserCreationForm):
         widgets = {
             'date_of_birth': DateInput
         }
+
+
+class CustomerCreationForm(UserCreationForm):
+    class Meta:
+        model = Customer
+        fields = ['email']
+
+
+class CustomerChangeForm(UserChangeForm):
+    class Meta:
+        model = Customer
+        fields = ['email']
+
+
+class StaffCreationForm(UserCreationForm):
+    class Meta:
+        model = Staff
+        fields = '__all__'
+
+
+class StaffChangeForm(UserChangeForm):
+    class Meta:
+        model = Staff
+        fields = '__all__'

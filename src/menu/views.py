@@ -12,19 +12,6 @@ from .forms import AddMenuItem, AddCategoryForm
 from .models import MenuCategory, MenuItem
 from accounts.models import Staff, Customer
 
-
-def home(request):
-    return render(request, 'website/pages/home.html')
-
-
-def about(request):
-    return render(request, 'website/pages/about.html')
-
-
-def book(request):
-    return render(request, 'website/pages/book.html')
-
-
 LABEL_LIST = ['Iced Coffee', 'Hot Coffee', 'Fruit Juice', 'Burger', 'Pizza', 'Pasta', 'Fries']
 
 
@@ -76,7 +63,7 @@ def mock_menu_item(request):
 
 def mock_staffs(request, count=5):
     f = faker.Faker()
-    photos_dir = "static/user/images/profile-photo-samples/"
+    photos_dir = "static/accounts/images/profile-photo-samples/"
     photo_list = os.listdir(photos_dir)
     for _ in range(count):
         new_staff = Staff(
@@ -107,7 +94,7 @@ def mock_staffs(request, count=5):
 
 def mock_customers(request, count=5):
     f = faker.Faker()
-    photos_dir = "static/user/images/profile-photo-samples/"
+    photos_dir = "static/accounts/images/profile-photo-samples/"
     photo_list = os.listdir(photos_dir)
     for _ in range(count):
         new_customer = Customer(
@@ -194,6 +181,7 @@ class MenuItemCreateView(PermissionRequiredMixin, CreateView):
     model = MenuItem
     form_class = AddMenuItem
     template_name = 'menu/menuitem_form.html'
+
     # login_url = reverse_lazy('accounts:register')
 
     def has_permission(self):

@@ -51,7 +51,7 @@ class RegisterView(CreateView):
 
 
 class CustomerProfileView(LoginRequiredMixin, TemplateView):
-    template_name = 'user/customer/customer_profile.html'
+    template_name = 'accounts/customer/customer_profile.html'
 
     def get_context_data(self, **kwargs):
         context = super(CustomerProfileView, self).get_context_data(**kwargs)
@@ -60,7 +60,7 @@ class CustomerProfileView(LoginRequiredMixin, TemplateView):
 
 
 class StaffProfileView(LoginRequiredMixin, TemplateView):
-    template_name = 'user/staff/staff_profile.html'
+    template_name = 'accounts/staff/staff_profile.html'
 
     def get_context_data(self, **kwargs):
         context = super(StaffProfileView, self).get_context_data(**kwargs)
@@ -69,7 +69,7 @@ class StaffProfileView(LoginRequiredMixin, TemplateView):
 
 
 class SuperuserProfileView(LoginRequiredMixin, TemplateView):
-    template_name = 'user/user_profile.html'
+    template_name = 'accounts/user_profile.html'
 
 
 def all_staffs_view(request):
@@ -79,7 +79,7 @@ def all_staffs_view(request):
         "all_staffs": all_staffs,
         "colors": colors
     }
-    return render(request, 'user/staff/all_staffs.html', context)
+    return render(request, 'accounts/staff/all_staffs.html', context)
 
 
 def all_customers_view(request):
@@ -89,4 +89,4 @@ def all_customers_view(request):
         "all_customers": all_customers,
         "colors": colors
     }
-    return render(request, 'user/customer/all_customers.html', context)
+    return render(request, 'accounts/customer/all_customers.html', context)

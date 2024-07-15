@@ -19,6 +19,11 @@ class AMirzaLoginView(LoginView):
     authentication_form = forms.LoginForm
     redirect_authenticated_user = True
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['next_url'] = f"?{self.redirect_field_name}=" + self.request.GET.get(self.redirect_field_name)
+        return context
+
     def form_valid(self, form):
         response = super(AMirzaLoginView, self).form_valid(form)
         messages.success(self.request, f"Welcome dear '{str(self.request.user)}'")

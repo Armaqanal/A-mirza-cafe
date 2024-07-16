@@ -1,9 +1,8 @@
-from django.http import HttpResponseRedirect
 from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin, LoginRequiredMixin
-
-from django.shortcuts import render, redirect
-from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from django.urls import reverse_lazy
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
+from django.contrib import messages
+
 from .forms import CategoryForm, MenuItemForm
 from .models import MenuCategory, MenuItem
 
@@ -57,6 +56,10 @@ class CategoryCreateView(PermissionRequiredMixin, CreateView):
     template_name = 'menu/category_form.html'
     extra_context = {'action_type': 'Adding'}
 
+    def form_valid(self, form):
+        messages.success(self.request, f"Category `{form.instance}` was successfully created.")
+        return super().form_valid(form)
+
     def get_success_url(self):
         return reverse_lazy('manage-category-list')
 
@@ -68,6 +71,10 @@ class CategoryUpdateView(PermissionRequiredMixin, UpdateView):
     template_name = 'menu/category_form.html'
     extra_context = {'action_type': 'Editing'}
 
+    def form_valid(self, form):
+        messages.info(self.request, f"Category `{form.instance}` was successfully updated.")
+        return super().form_valid(form)
+
     def get_success_url(self):
         return reverse_lazy('manage-category-list')
 
@@ -75,6 +82,10 @@ class CategoryUpdateView(PermissionRequiredMixin, UpdateView):
 class CategoryDeleteView(PermissionRequiredMixin, DeleteView):
     permission_required = 'menu.delete_menucategory'
     model = MenuCategory
+
+    def form_valid(self, form):
+        messages.warning(self.request, f"Category `{self.object}` was deleted.")
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse_lazy('manage-category-list')
@@ -90,6 +101,10 @@ class MenuItemCreateView(PermissionRequiredMixin, CreateView):
     template_name = 'menu/menu_item_form.html'
     extra_context = {'action_type': 'Adding'}
 
+    def form_valid(self, form):
+        messages.success(self.request, f"Menu Item `{form.instance}` was successfully created.")
+        return super().form_valid(form)
+
 
 class MenuItemUpdateView(PermissionRequiredMixin, UpdateView):
     permission_required = 'menu.change_menuitem'
@@ -97,6 +112,10 @@ class MenuItemUpdateView(PermissionRequiredMixin, UpdateView):
     form_class = MenuItemForm
     template_name = 'menu/menu_item_form.html'
     extra_context = {'action_type': 'Editing'}
+
+    def form_valid(self, form):
+        messages.info(self.request, f"Menu Item `{form.instance}` was successfully updated.")
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse_lazy('category-detail', kwargs={'slug': self.kwargs['category_slug']})
@@ -106,9 +125,11 @@ class MenuItemDeleteView(PermissionRequiredMixin, DeleteView):
     permission_required = 'menu.delete_menuitem'
     model = MenuItem
 
+    def form_valid(self, form):
+        messages.warning(self.request, f"Menu item `{self.object}` was deleted.")
+        return super().form_valid(form)
+
     def get_success_url(self):
         return reverse_lazy('category-detail', kwargs={'slug': self.kwargs['category_slug']})
 
-# todo: check permissions with customer and staff accounts
-# todo: add messages
 # todo: change the form style

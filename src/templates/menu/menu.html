@@ -24,7 +24,7 @@
             </div>
 
             <div class="search-bar justify-content-center">
-                <form action="{% url 'menu-category' selected_category %}" method="get">
+                <form action="{% url 'menu' selected_category %}" method="get">
 
                     <div class="input-group my-3">
                         <input type="text" class="form-control input-text m-0" placeholder="Search Food Name" name="q"
@@ -43,7 +43,7 @@
                         {% else %}
                     <li class="">
                 {% endif %}
-                <a href="{% url 'menu-category' 'all' %}">All</a>
+                <a href="{% url 'menu' 'all' %}">All</a>
                 </li>
                 {% for category in categories %}
                     {% if selected_category == category.slug %}
@@ -51,7 +51,7 @@
                             {% else %}
                         <li class="">
                     {% endif %}
-                    <a href="{% url 'menu-category' category.slug %} ">{{ category.slug }}</a>
+                    <a href="{% url 'menu' category.slug %} ">{{ category.slug }}</a>
                 {% endfor %}
                 </li>
             </ul>
@@ -66,14 +66,17 @@
 
                                 <div class="box" style="height: 450px">
                                     <div>
-                                        <div class="img-box">
+                                    
+                                        <div class="img-box" >
                                             {% if menu_item.image %}
                                                 <img src="{{ menu_item.image.url }}"
-                                                     alt="{{ menu_item.image.url }}">
+                                                     alt="{{ menu_item.image.url }}"
+                                                    class="rounded">
                                             {% else %}
-                                                <img src="{% static 'menu/images/' %}" alt="">
+                                                <img src="{% static 'menu/images/default_menu_item_photo.png' %}" alt="">
                                             {% endif %}
                                         </div>
+                                    
                                         <div class="detail-box">
                                             <h5>
                                                 {{ menu_item.food_name }}
@@ -166,7 +169,7 @@
                 </div>
             </div>
             <div class="btn-box">
-                <a href="{% url 'menu-category' 'all' %}">
+                <a href="{% url 'menu' 'all' %}">
                     View More
                 </a>
             </div>

@@ -13,12 +13,13 @@ class MenuCategory(DateFieldsMixin, models.Model):
     slug = models.SlugField(max_length=100, unique=True, blank=True, null=True, allow_unicode=True)
 
     def save(self, *args, **kwargs):
+        # todo: if the label gets updated the slug wouldn't be matched!
         if not self.slug:
             self.slug = slugify(self.label, allow_unicode=True)
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('menu-category', kwargs={'slug': self.slug})
+        return reverse('menu', kwargs={'slug': self.slug})
 
     def __str__(self):
         return self.label
@@ -28,7 +29,7 @@ class MenuItem(DateFieldsMixin, models.Model):
     def food_image_upload_to(self, filename):
         return f"menu_item_images/{self.menu_category}/{filename}"
 
-    food_name = models.CharField(max_length=100, null=False)
+    food_name = models.CharField(max_length=100, unique=True, null=False)
     slug = models.SlugField(max_length=100, blank=True, null=True, allow_unicode=True)
 
     description = models.CharField(max_length=200, null=True, blank=True)
@@ -44,11 +45,12 @@ class MenuItem(DateFieldsMixin, models.Model):
     inventory = models.PositiveSmallIntegerField(default=0)
     image = models.ImageField(
         upload_to=food_image_upload_to,
+        null=True,
         blank=True
     )
     menu_category = models.ForeignKey(
         MenuCategory,
-        on_delete=models.PROTECT,  # It's needed for directory name
+        on_delete=models.CASCADE,  # `PROTECTED` is needed for directory name
         related_name='menu_items'
     )
 
@@ -60,19 +62,14 @@ class MenuItem(DateFieldsMixin, models.Model):
         return round(self.price * (1 - self.discount))
 
     def save(self, *args, **kwargs):
+        # todo: if the food name gets updated the slug wouldn't be matched!
         if not self.slug:
             self.slug = slugify(self.food_name, allow_unicode=True)
-            unique_slug = self.slug
-            num = 1
-            while MenuItem.objects.filter(slug=unique_slug).exists():
-                unique_slug = f"{self.slug}-{num}"
-                num += 1
-            self.slug = unique_slug
-        super().save(*args,
-                     **kwargs)
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('menu-category', kwargs={'slug': self.menu_category.slug})
+        return reverse('menu', kwargs={'slug': self.menu_category.slug})
+        # return reverse('manage-menu-item-detail', kwargs={'category_slug': self.menu_category.slug, 'slug': self.slug})
         # return reverse('menu-category', kwargs={'selected_category': self.slug})
         # TODO:NEED VIEW FOR ITEMS OR BE HANDLED ON SELECTED CATEGORY
 
@@ -83,19 +80,18 @@ def delete_menu_item_image(sender, instance: MenuItem, **kwargs):
         if os.path.isfile(instance.image.path):
             os.remove(instance.image.path)
 
-
-@receiver(pre_save, sender=MenuItem)
-# TODO: Move the image directory if the category changed
-# TODO: Remove the category directory in MEDIA_ROOT if the category is deleted
-def delete_old_menu_item_image(sender, instance: MenuItem, **kwargs):
-    if not instance.id:
-        return False
-
-    try:
-        old_instance = MenuItem.objects.get(id=instance.id)
-    except MenuItem.DoesNotExist:
-        return False
-
-    if instance.image != old_instance.image:
-        if os.path.isfile(old_instance.image.path):
-            os.remove(old_instance.image.path)
+# @receiver(pre_save, sender=MenuItem)
+# # TODO: Move the image directory if the category changed
+# # TODO: Remove the category directory in MEDIA_ROOT if the category is deleted
+# def delete_old_menu_item_image(sender, instance: MenuItem, **kwargs):
+#     if not instance.id:
+#         return False
+#
+#     try:
+#         old_instance = MenuItem.objects.get(id=instance.id)
+#     except MenuItem.DoesNotExist:
+#         return False
+#
+#     if instance.image != old_instance.image:
+#         if os.path.isfile(old_instance.image.path):
+#             os.remove(old_instance.image.path)

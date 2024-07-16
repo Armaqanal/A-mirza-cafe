@@ -37,6 +37,7 @@ class CategoryListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = MenuCategory
     template_name = 'menu/category_list.html'
     context_object_name = 'category_list'
+    ordering = ['label']
 
     def test_func(self):
         return self.request.user.is_staff

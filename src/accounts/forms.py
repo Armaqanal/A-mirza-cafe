@@ -1,27 +1,39 @@
 from django import forms
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ValidationError
 
-from user.models import Customer
-from .models import User
+from .models import Customer, Staff
 
-
-class LoginForm(forms.Form):
-    username = forms.CharField(max_length=63)
-    password = forms.CharField(max_length=63, widget=forms.PasswordInput)
+User = get_user_model()
 
 
-class UserLoginForm(forms.ModelForm):
-    username = forms.CharField(max_length=100)
-    password = forms.CharField(widget=forms.PasswordInput, max_length=63)
-    email = forms.EmailField(max_length=90)
-    phone_number = forms.CharField(max_length=100)
-
+class LoginForm(AuthenticationForm):
     class Meta:
         model = User
-        fields = ['username', 'password', 'email', 'phone_number']
+        fields = ('username', 'password')
         widgets = {
-            'password': forms.PasswordInput()
+            'password': forms.PasswordInput
         }
+
+    def __init__(self, *args, **kwargs):
+        super(LoginForm, self).__init__(*args, **kwargs)
+
+        self.fields['username'].widget.attrs.update(
+            {
+                'class': 'form-control form-control-lg',
+                'id': 'username'
+            }
+        )
+
+        self.fields['password'].widget.attrs.update(
+            {
+                'class': 'form-control form-control-lg',
+                'id': 'password'
+            }
+        )
 
 
 class DateInput(forms.DateInput):
@@ -66,6 +78,17 @@ class CustomerRegisterForm(UserCreationForm):
             'class': 'form-control ',
         })
 
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        phone = self.cleaned_data.get('phone')
+        email = self.cleaned_data.get('email')
+        if not (username or email or phone):
+            raise ValidationError(
+                "Providing username, email or phone number is required.",
+                code='invalid'
+            )
+        return username
+
     class Meta:
         model = Customer
         fields = ['username', 'email', 'phone', 'password1', 'password2', 'photo', 'first_name', 'last_name',
@@ -73,3 +96,27 @@ class CustomerRegisterForm(UserCreationForm):
         widgets = {
             'date_of_birth': DateInput
         }
+
+
+class CustomerCreationForm(UserCreationForm):
+    class Meta:
+        model = Customer
+        fields = ['email']
+
+
+class CustomerChangeForm(UserChangeForm):
+    class Meta:
+        model = Customer
+        fields = ['email']
+
+
+class StaffCreationForm(UserCreationForm):
+    class Meta:
+        model = Staff
+        fields = '__all__'
+
+
+class StaffChangeForm(UserChangeForm):
+    class Meta:
+        model = Staff
+        fields = '__all__'

@@ -5,7 +5,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.urls import reverse
 from django.utils.text import slugify
-from user.models import DateFieldsMixin
+from accounts.models import DateFieldsMixin
 
 
 class MenuCategory(DateFieldsMixin, models.Model):
@@ -18,7 +18,7 @@ class MenuCategory(DateFieldsMixin, models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('menu-category', kwargs={'selected_category': self.slug})
+        return reverse('menu-category', kwargs={'slug': self.slug})
 
     def __str__(self):
         return self.label
@@ -69,10 +69,11 @@ class MenuItem(DateFieldsMixin, models.Model):
                 unique_slug = f"{self.slug}-{num}"
                 num += 1
             self.slug = unique_slug
-        super().save(args, kwargs)
+        super().save(*args,
+                     **kwargs)
 
     def get_absolute_url(self):
-        return reverse('menu-category', kwargs={'selected_category': self.menu_category.slug})
+        return reverse('menu-category', kwargs={'slug': self.menu_category.slug})
         # return reverse('menu-category', kwargs={'selected_category': self.slug})
         # TODO:NEED VIEW FOR ITEMS OR BE HANDLED ON SELECTED CATEGORY
 

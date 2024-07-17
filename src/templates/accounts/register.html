@@ -34,21 +34,16 @@
 <body>
 
 
-<div class="vh-100">
+<div class="h-100">
     <section class="h-100 gradient-custom">
         <div class="container py-5 h-100">
             <div class="row justify-content-center align-items-center h-100">
                 <div class="col-12 col-lg-9 col-xl-7">
-                
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-danger">
-                                {{ message }}
-                            </div>
 
-                        {% endfor %}
-                    {% endif %}
-                
+                    <!-- display messages -->
+                    {% include 'website/sections/message_display.html' %}
+                    <!-- display messages -->
+
                     <div class="card shadow-2-strong card-registration" style="border-radius: 15px;">
                         <div class="card-body p-4 p-md-5">
                             <h3 class="mb-4 pb-2 pb-md-0 mb-md-5">Registration Form</h3>
@@ -159,12 +154,18 @@
                                 </div>
 
 
-                                <div class="mt-4 pt-2">
+                                <div class="mt-4">
                                     <input data-mdb-ripple-init class="btn btn-dark btn-lg" type="submit"
                                            value="Register"/>
                                 </div>
 
+
                             </form>
+
+                            <div class="mt-2">
+                                <a href="{% url 'accounts:login' %}">Already have an account?</a>
+                            </div>
+                           
                         </div>
                     </div>
                 </div>

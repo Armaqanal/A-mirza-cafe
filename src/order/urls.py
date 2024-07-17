@@ -2,10 +2,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('cart/', views.CartView.as_view(), name='cart'),
-    path('order/', views.OrderView.as_view(), name='order'),
-    path('submit-order/<str:selected_category>/<int:menu_item_id>/',
-         views.add_menu_item_to_cart,
+    path('cart/', views.CartListView.as_view(), name='cart'),
+    path('order/', views.MyOrdersListView.as_view(), name='my-orders'),
+    path('add/menu-item/<slug:menu_item_slug>/to/cart/',
+         views.AddMenuItemToCartView.as_view(),
          name='add-menu-item-to-cart'
          ),
 

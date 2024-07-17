@@ -1,5 +1,11 @@
 {% load static %}
-
+{% block css %}
+    <style>
+        .custom_nav-container .navbar-nav {
+            padding-left: 0;
+        }
+    </style>
+{% endblock %}
 
 <header class="header_section">
     <div class="container">
@@ -21,12 +27,14 @@
                         <a class="nav-link" href="{% url 'website-home' %}">Home <span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'menu-category' 'all' %}">Menu</a>
+                        <a class="nav-link" href="{% url 'menu' 'all' %}">Menu</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'website-about' %}">About</a>
                     </li>
-                    {% if request.user.is_staff %}
+
+                    <!-- using `header_section_parameters` context processor -->
+                    {% if is_staff %}
                         <li class="nav-item dropdown">
                             <button class="btn  dropdown-toggle text-white" data-bs-toggle="dropdown"
                                     aria-expanded="false">
@@ -34,18 +42,33 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-dark">
                                 <li><a class="dropdown-item" href="{% url 'manage-orders' %}">Orders</a></li>
-                                <li><a class="dropdown-item" href="{% url 'manage-menu' %}">Menu</a></li>
+                                <li><a class="dropdown-item" href="{% url 'manage-category-list' %}">Menu</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+
+                    <!-- using `header_section_parameters` context processor -->
+                    {% if is_manager %}
+                        <li class="nav-item dropdown">
+                            <button class="btn  dropdown-toggle text-white" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                REPORTS
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark">
                                 <li><a class="dropdown-item" href="{% url 'manage-dashboard' %}">Dashboard</a></li>
                             </ul>
                         </li>
                     {% endif %}
+
                 </ul>
                 <div class="user_option">
-                    {% if request.user.is_staff %}
+
+                    <!-- staffs and customers icon -->
+                    {% if is_manager %}
                         <a class="staff_link" href="{% url 'accounts:all-staffs' %}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 48 48">
                                 <g fill="currentColor">
-                                    <path d="M17 31v-2h2v2z"/>
+                                    <path d="M17 31v-2h2v2z"></path>
                                     <path fill-rule="evenodd"
                                           d="M20 4a3 3 0 0 0-3 3h-4a3 3 0 0 0-3 3v31a3 3 0 0 0 3 3h22a3 3 0 0 0 3-3V10a3 3 0 0 0-3-3h-4a3 3 0 0 0-3-3zm-1 3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-8a1 1 0 0 1-1-1zm-3 13a1 1 0 1 0 0 2h7a1 1 0 1 0 0-2zm-1-4a1 1 0 0 1 1-1h15.5a1 1 0 1 1 0 2H16a1 1 0 0 1-1-1m0 12a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1zm13 4a3 3 0 1 0 0-6a3 3 0 1 0 0 6m-6 4.5c0-2.116 3.997-3.182 6-3.182s6 1.066 6 3.182V39H22z"
                                           clip-rule="evenodd">
@@ -58,6 +81,9 @@
                         </a>
 
                     {% endif %}
+                    <!-- staffs and customers icon -->
+
+                    <!-- cart icon -->
                     <a class="cart_link" href="{% url 'cart' %}">
                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                              xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 456.029 456.029"
@@ -82,38 +108,26 @@
                    c1.024,28.16,24.064,50.688,52.224,50.688h1.024C193.536,443.31,216.576,418.734,215.04,389.55z"></path>
                     </g>
                   </g>
-                            <g>
-                  </g>
-                            <g>
-                  </g>
-                            <g>
-                  </g>
-                            <g>
-                  </g>
-                            <g>
-                  </g>
-                            <g>
-                  </g>
-                            <g>
-                  </g>
-                            <g>
-                  </g>
-                            <g>
-                  </g>
-                            <g>
-                  </g>
-                            <g>
-                  </g>
-                            <g>
-                  </g>
-                            <g>
-                  </g>
-                            <g>
-                  </g>
-                            <g>
-                  </g>
+                            <g> </g>
+                            <g> </g>
+                            <g> </g>
+                            <g> </g>
+                            <g> </g>
+                            <g> </g>
+                            <g> </g>
+                            <g> </g>
+                            <g> </g>
+                            <g> </g>
+                            <g> </g>
+                            <g> </g>
+                            <g> </g>
+                            <g> </g>
+                            <g> </g>
                 </svg>
                     </a>
+                    <!-- cart icon -->
+
+                    <!-- login and user management button -->
                     {% if request.user.is_authenticated %}
 
                         <div class="btn-group ">
@@ -171,6 +185,7 @@
                             Login
                         </a>
                     {% endif %}
+                    <!-- login and user management button -->
                 </div>
             </div>
         </nav>

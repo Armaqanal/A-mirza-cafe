@@ -1,8 +1,3 @@
-.active a {
-    color: #ffbe33;
-    font-weight: bold;
-}
-
 .btn:hover {
     color: #fff;
 }
@@ -15,6 +10,12 @@
 
 .form-control {
     border: 1px solid #f8c146;
+}
+
+/* newly added */
+.active a {
+    color: #ffbe33;
+    font-weight: bold;
 }
 
 

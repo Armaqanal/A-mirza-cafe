@@ -5,7 +5,7 @@ def header_section_parameters(request):
     is_manager = False
     if request.user.is_superuser and request.user.is_staff:
         is_manager = True
-    elif qs := Staff.objects.filter(id=request.user.id).exists():
+    elif qs := Staff.objects.filter(id=request.user.id):
         staff = qs.first()
         if staff.role == 'manager':
             is_manager = True

@@ -1,17 +1,20 @@
 from typing import Any
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models.query import QuerySet
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic import FormView, View
+
 from menu.models import MenuItem
 from accounts.models import Customer
-from django.views.generic.base import TemplateView,RedirectView
+from django.views.generic.base import TemplateView, RedirectView
 from django.views.generic.edit import DeleteView
 from django.views.generic.list import ListView
 from .forms import EditOrderItemForm, AddOrderItemForm, AddOrderForm, TotalSalesFilter
 from .models import Order, OrderItem
-from .ultis import (
+from .utils import (
     total_sales_by_year_month_day,
     total_sales_by_year,
     top_year_based_on_sales,
@@ -23,55 +26,42 @@ from .ultis import (
 import csv
 
 
-# def cart(request):
-#     username = request.COOKIES.get("username")
-#     customer = get_object_or_404(Customer, username=username)
-#     unpaid_order = Order.get_unpaid_order(customer_id=customer.id)
-#     unpaid_order_items = unpaid_order.order_items.all()
-#     context = {"unpaid_order_items": unpaid_order_items}
-#     return render(request, "order/cart.html", context)
-
-class CartView(TemplateView):
+class CartListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = OrderItem
     template_name = "order/cart.html"
+    context_object_name = "unpaid_order_items"
+    customer = None
 
-    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        self.username = self.request.session.get("username")
-        if self.username:
-            self.customer = get_object_or_404(Customer,username=self.username)    
-            self.unpaid_order = Order.get_unpaid_order(customer_id=self.customer.id)
-            self.unpaid_order_item = self.unpaid_order.order_items.all()
-            return super(CartView,self).dispatch(request, *args, **kwargs)
+    def test_func(self):
+        if qs := Customer.objects.filter(id=self.request.user.id):
+            self.customer = qs.first()
+            return True
+        return False
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["unpaid_order_items"] = self.unpaid_order_item
-        return context
+    def get_queryset(self):
+        unpaid_order = Order.objects.get_unpaid_order(customer_id=self.customer.id)
+        return super().get_queryset().filter(order=unpaid_order, )
 
-# def order(request):
-#     print(request.COOKIES.get("username"))
-#     return render(request, "order/order.html", {})
 
-class OrderView(TemplateView):
+class MyOrdersListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     template_name = "order/order.html"
 
 
-def add_menu_item_to_cart(request, selected_category=None, menu_item_id=None):
-    username = request.COOKIES.get("username")
-    customer = get_object_or_404(Customer, username=username)
-    # page not found cases are:
-    # 1. the username is for a staff instead of a customer!
-    # 2. the cookie is expired
+class AddMenuItemToCartView(LoginRequiredMixin, UserPassesTestMixin, View):
+    customer = None
 
-    selected_menu_item = MenuItem.objects.get(id=menu_item_id)
-    print(selected_menu_item)
-    unpaid_order = Order.get_unpaid_order(customer_id=customer.id)
+    def test_func(self):
+        if qs := Customer.objects.filter(id=self.request.user.id):
+            self.customer = qs.first()
+            return True
+        return False
 
-    # check if this item has been already selected for the 'unpaid_order',
-    # if it exits get it and if it doesn't create it
-    order_item = OrderItem.objects.filter(order=unpaid_order).get_or_create(
-        menu_item=selected_menu_item, order=unpaid_order, quantity=1
-    )
-    return redirect("menu", selected_category)
+    def post(self, request, *args, **kwargs):
+        selected_menu_item = get_object_or_404(MenuItem, slug=self.kwargs.get("menu_item_slug"))
+        unpaid_order = Order.objects.get_unpaid_order(customer_id=self.customer.id)
+        if not OrderItem.objects.filter(order=unpaid_order, menu_item=selected_menu_item).exists():
+            OrderItem.objects.create(order=unpaid_order, menu_item=selected_menu_item, quantity=1)
+        return redirect('menu', slug=selected_menu_item.menu_category.slug)
 
 
 class ManageOrderView(ListView):
@@ -80,7 +70,7 @@ class ManageOrderView(ListView):
 
     def get_queryset(self):
         queryset = Order.objects.select_related("customer").filter(is_paid=True).order_by("-id")
-    
+
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["orders"] = context["order_list"]
@@ -114,18 +104,21 @@ class DeleteOrderView(DeleteView):
     model = Order
     success_url = "website-home"
 
+
 class ManageOrderItemView(ListView):
     model = OrderItem
     template_name = "order/manage_order_items.html"
     context_object_name = "order_items"
 
     def get_queryset(self):
-        queryset = OrderItem.objects.select_related("menu_item").filter(order=self.kwargs.get("order_id")).order_by("-id")
+        queryset = OrderItem.objects.select_related("menu_item").filter(order=self.kwargs.get("order_id")).order_by(
+            "-id")
         return queryset
 
     # def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
     #     context = super().get_context_data(**kwargs)
     #     context["order_items"] = context["orderitems_list"]
+
 
 def add_order_item(request, order_id):
     order = Order.objects.get(id=order_id)
@@ -151,10 +144,10 @@ def edit_order_item(request, order_id, order_item_id):
     context = {"order_id": order_id, "order_item_id": order_item_id, "form": form}
     return render(request, "order/order_item_form.html", context)
 
+
 class DeleteOrderItem(DeleteView):
     model = OrderItem
     success_url = "manage-order-items"
-
 
 
 @staff_member_required

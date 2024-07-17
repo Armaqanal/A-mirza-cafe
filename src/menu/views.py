@@ -33,14 +33,12 @@ class MenuListView(ListView):
         return context
 
 
-class CategoryListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+class CategoryListView(PermissionRequiredMixin, ListView):
+    permission_required = 'menu.view_menucategory'
     model = MenuCategory
     template_name = 'menu/category_list.html'
     context_object_name = 'category_list'
     ordering = ['label']
-
-    def test_func(self):
-        return self.request.user.is_staff
 
 
 class CategoryDetailView(PermissionRequiredMixin, DetailView):
@@ -92,9 +90,6 @@ class CategoryDeleteView(PermissionRequiredMixin, DeleteView):
         return reverse_lazy('manage-category-list')
 
 
-# class MenuItemDetailView(LoginRequiredMixin, DetailView):
-#     model = MenuItem
-#     template_name = 'menu/menu_item_detail.html'
 class MenuItemCreateView(PermissionRequiredMixin, CreateView):
     permission_required = "menu.add_menuitem"
     model = MenuItem

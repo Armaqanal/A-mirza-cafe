@@ -1,9 +1,10 @@
-from django.conf import settings
 from django.core.validators import MaxValueValidator
 from django.db import models
 from django.db.models import Sum
-from menu.models import MenuItem
+
 from accounts.models import DateFieldsMixin, Customer
+from menu.models import MenuItem
+from .managers import OrderManager
 
 
 class Order(DateFieldsMixin, models.Model):
@@ -11,19 +12,10 @@ class Order(DateFieldsMixin, models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     is_paid = models.BooleanField(default=False)
 
+    objects = OrderManager()
+
     def calculate_total_order_item_price(self):
         self.total_order_item_prices = self.order_items.aggregate(sum=Sum('total_discounted_price'))['sum']
-
-    @classmethod
-    def get_unpaid_order(cls, customer_id=61):
-        """"""
-        last_unpaid_order, new_unpaid_order = cls.objects.get_or_create(customer_id=customer_id, is_paid=False)
-        return last_unpaid_order or new_unpaid_order
-
-    def update_from_cleaned_data(self, cleaned_data: dict):
-        self.customer = cleaned_data['customer']
-        self.is_paid = True
-        self.save()
 
     def save(self, *args, **kwargs):
         if self.pk:

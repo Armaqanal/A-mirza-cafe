@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.core.validators import MaxValueValidator
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, IntegerField, Value
+from django.db.models.functions import Coalesce
 from menu.models import MenuItem
 from accounts.models import DateFieldsMixin, Customer
 
@@ -12,7 +13,11 @@ class Order(DateFieldsMixin, models.Model):
     is_paid = models.BooleanField(default=False)
 
     def calculate_total_order_item_price(self):
-        self.total_order_item_prices = self.order_items.aggregate(sum=Sum('total_discounted_price'))['sum']
+        self.total_order_item_prices = self.order_items.aggregate(
+            sum=Coalesce(
+                Sum('total_discounted_price'), Value(0)
+            )
+        )['sum']
 
     @classmethod
     def get_unpaid_order(cls, customer_id=61):

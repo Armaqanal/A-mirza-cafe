@@ -1,13 +1,13 @@
 from typing import Any
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.decorators import login_required
-from django.db.models.query import QuerySet
-from django.http import Http404, HttpRequest, HttpResponse
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy
 from menu.models import MenuItem
 from accounts.models import Customer
-from django.views.generic.base import TemplateView,RedirectView
-from django.views.generic.edit import DeleteView
+from django.views.generic.base import TemplateView, RedirectView
+from django.views.generic.edit import DeleteView, CreateView, UpdateView
 from django.views.generic.list import ListView
 from .forms import EditOrderItemForm, AddOrderItemForm, AddOrderForm, TotalSalesFilter
 from .models import Order, OrderItem
@@ -37,15 +37,16 @@ class CartView(TemplateView):
     def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.username = self.request.session.get("username")
         if self.username:
-            self.customer = get_object_or_404(Customer,username=self.username)
+            self.customer = get_object_or_404(Customer, username=self.username)
             self.unpaid_order = Order.get_unpaid_order(customer_id=self.customer.id)
             self.unpaid_order_item = self.unpaid_order.order_items.all()
-            return super(CartView,self).dispatch(request, *args, **kwargs)
+            return super(CartView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["unpaid_order_items"] = self.unpaid_order_item
         return context
+
 
 # def order(request):
 #     print(request.COOKIES.get("username"))
@@ -74,87 +75,106 @@ def add_menu_item_to_cart(request, selected_category=None, menu_item_id=None):
     return redirect("menu", selected_category)
 
 
-class ManageOrderView(ListView):
+class ManageOrderView(PermissionRequiredMixin, ListView):
+    permission_required = 'order.view_order'
     template_name = "order/manage_orders.html"
     model = Order
+    context_object_name = 'orders'
 
     def get_queryset(self):
-        queryset = Order.objects.select_related("customer").filter(is_paid=True).order_by("-id")
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["orders"] = context["order_list"]
+        return Order.objects.select_related("customer").filter(is_paid=True).order_by("-id")
 
 
-def add_order(request):
-    form = AddOrderForm()
-    if request.method == "POST":
-        form = AddOrderForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect("manage-orders")
-
-    context = {"form": form}
-    return render(request, "order/order_form.html", context)
-
-
-def edit_order(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
-    form = AddOrderForm(instance=order)
-    if request.method == "POST":
-        form = AddOrderForm(request.POST)
-        if form.is_valid():
-            order.update_from_cleaned_data(form.cleaned_data)
-            return redirect("manage-orders")
-    context = {"order_id": order_id, "form": form}
-    return render(request, "order/order_form.html", context)
-
-
-class DeleteOrderView(DeleteView):
+class OrderCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = 'order.add_order'
+    template_name = 'order/order_form.html'
     model = Order
-    success_url = "website-home"
+    form_class = AddOrderForm
+    success_url = reverse_lazy('manage-orders')
 
-class ManageOrderItemView(ListView):
-    model = OrderItem
-    template_name = "order/manage_order_items.html"
-    context_object_name = "order_items"
+
+class OrderUpdateView(PermissionRequiredMixin, UpdateView):
+    permission_required = 'order.change_order'
+    model = Order
+    template_name = 'order/order_form.html'
+    form_class = AddOrderForm
+
+    def get_success_url(self):
+        return reverse_lazy('manage-orders')
+
+    def form_valid(self, form):
+        order = self.get_object()
+        cleaned_data = form.cleaned_data
+        order.customer = cleaned_data['customer']
+        order.save(update_fields=['customer'])
+        return super().form_valid(form)
+
+
+class DeleteOrderView(PermissionRequiredMixin, DeleteView):
+    permission_required = 'order.delete_order'
+    model = Order
+    success_url = reverse_lazy('manage-orders')
+
+
+class ManageOrderItemsListView(PermissionRequiredMixin, ListView):
+    permission_required = 'order.view_orderitem'
+    template_name = 'order/manage_order_items.html'
+    context_object_name = 'order_items'
 
     def get_queryset(self):
-        queryset = OrderItem.objects.select_related("menu_item").filter(order=self.kwargs.get("order_id")).order_by("-id")
+        order_id = self.kwargs['order_id']
+        queryset = OrderItem.objects.select_related('menu_item').filter(order=order_id).order_by('-id')
         return queryset
 
-    # def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-    #     context = super().get_context_data(**kwargs)
-    #     context["order_items"] = context["orderitems_list"]
-
-def add_order_item(request, order_id):
-    order = Order.objects.get(id=order_id)
-    form = AddOrderItemForm(initial={"order": order, "quantity": 1})
-    if request.method == "POST":
-        form = AddOrderItemForm(request.POST)
-        if form.is_valid():
-            print("*" * 50, form.cleaned_data)
-            order_item = form.save()
-            return redirect("manage-order-items", order_item.order_id)
-    context = {"order_id": order_id, "form": form}
-    return render(request, "order/order_item_form.html", context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        order_id = self.kwargs['order_id']
+        context['order_id'] = order_id
+        return context
 
 
-def edit_order_item(request, order_id, order_item_id):
-    order_item = OrderItem.objects.get(id=order_item_id)
-    form = EditOrderItemForm(instance=order_item)
-    if request.method == "POST":
-        form = EditOrderItemForm(request.POST)
-        if form.is_valid():
-            order_item.update_from_cleaned_data(form.cleaned_data)
-            return redirect("manage-order-items", order_item.order_id)
-    context = {"order_id": order_id, "order_item_id": order_item_id, "form": form}
-    return render(request, "order/order_item_form.html", context)
-
-class DeleteOrderItem(DeleteView):
+class OrderItemCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = 'order.add_orderitem'
+    template_name = 'order/order_item_form.html'
     model = OrderItem
-    success_url = "manage-order-items"
+    form_class = AddOrderItemForm
 
+    def get_initial(self):
+        order_id = self.kwargs.get('order_id')
+        order = Order.objects.get(id=order_id)
+        return {'order': order, 'quantity': 1}
+
+    def get_success_url(self):
+        return reverse_lazy("manage-order-items", kwargs={'order_id': self.kwargs.get('order_id')})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['order_id'] = self.kwargs.get('order_id')
+        return context
+
+
+class EditOrderItemView(PermissionRequiredMixin, UpdateView):
+    permission_required = 'order.change_orderitem'
+    template_name = 'order/order_item_form.html'
+    model = OrderItem
+    form_class = EditOrderItemForm
+
+    def get_success_url(self):
+        return reverse_lazy("manage-order-items", kwargs={'order_id': self.kwargs.get('order_id')})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['order_id'] = self.kwargs.get('order_id')
+        context['order_item_id'] = self.kwargs.get('pk')
+        return context
+
+
+class DeleteOrderItemView(PermissionRequiredMixin, DeleteView):
+    permission_required = 'order.delete_orderitem'
+    model = OrderItem
+
+    def get_success_url(self):
+        return reverse_lazy("manage-order-items", kwargs={'order_id': self.kwargs.get('order_id')})
 
 
 @staff_member_required

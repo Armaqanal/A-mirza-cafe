@@ -17,53 +17,54 @@
     <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'manage-orders' %}">Manage Order</a></li>
-        
-            {% if order_id %}   {# edit #}
-                
+
+            {% if order.pk %}   {# edit #}
+
                 <li class="breadcrumb-item active" aria-current="page">
-                    <a href="{% url 'manage-order-items' order_id %}">Order No. {{ order_id }}</a>
+                    <a href="{% url 'manage-order-items' order.pk %}">Order No. {{ order.pk }}</a>
                 </li>
                 <li class="breadcrumb-item"><a href="{% url 'manage-orders' %}">Edit Order</a></li>
-                
+
             {% else %}  {# add #}
-                
+
                 <li class="breadcrumb-item"><a href="{% url 'manage-orders' %}">Add Order</a></li>
-                
-            {% endif %} 
-        
+
+            {% endif %}
+
         </ol>
     </nav>
 
     <!--  Bread-Crumb  -->
 
 
+
     <div class="container  mx-auto w-25 my-4">
-    
-        {% if order_id %}  {# edit #}
-            
-            <h1 style="text-align: center">Edit Order Item</h1>
+
+        {% if order.pk %}  {# edit #}
+
+            <h1 style="text-align: center">Edit Order</h1>
             <form class="mx-auto border rounded-4 p-4 bg-dark text-warning"
-                  action="{% url 'edit-order' order_id  %}"
+                  action="{% url 'edit-order' order.pk  %}"
                   method="post">
-            
+
         {% else %}  {# add #}
-            
+
             <h1 style="text-align: center">Add Order</h1>
             <form class="mx-auto border rounded-4 p-4 bg-dark text-warning"
                   action="{% url 'add-order' %}"
                   method="post">
-            
+
         {% endif %}
-    
+
         {% csrf_token %}
-    
+
         <div class="px-auto">
             {{ form|crispy }}
             <button type="submit" class="btn btn-outline-warning mt-3 font-weight-bold">Submit</button>
         </div>
-    
+
         </form>
-    
+
     </div>
-    
+
 {% endblock content %}

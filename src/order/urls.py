@@ -10,19 +10,20 @@ urlpatterns = [
          ),
 
     # order-management
-    path('manage-orders/', views.ManageOrderView.as_view(), name='manage-orders'),
-    path('manage-orders/add-order', views.add_order, name='add-order'),
-    path('manage-orders/edit-order/<int:order_id>/', views.edit_order, name='edit-order'),
-    path('manage-orders/<int:pk>/delete/', views.DeleteOrderView.as_view(), name='delete-order'),
+    path('orders/', views.ManageOrderView.as_view(), name='manage-orders'),
+    path('manage/order/add/', views.OrderCreateView.as_view(), name='add-order'),
+    path('manage/order/<int:pk>/edit', views.OrderUpdateView.as_view(), name='edit-order'),
+    path('manage/order/<int:pk>/delete/', views.DeleteOrderView.as_view(), name='delete-order'),
 
     # order-item-management
-    path('manage-orders/<int:order_id>/manage-order-items/', views.ManageOrderItemView.as_view(), name='manage-order-items'),
-    path('manage-orders/<int:order_id>/manage-order-items/add-order-item/', views.add_order_item,
+    path('manage/order/<int:order_id>/order-item/', views.ManageOrderItemsListView.as_view(),
+         name='manage-order-items'),
+    path('manage/order/<int:order_id>/order-item/add/', views.OrderItemCreateView.as_view(),
          name='add-order-item'),
-    path('manage-orders/<int:order_id>/manage-order-items/<int:order_item_id>/edit-order-item/', views.edit_order_item,
+    path('manage/order/<int:order_id>/order-item/<int:pk>/edit/', views.EditOrderItemView.as_view(),
          name='edit-order-item'),
-    path('manage-orders/<int:order_id>/manage-order-items/<int:pk>/delete/',
-         views.DeleteOrderItem.as_view(), name='delete-order-item'),
+    path('manage/order/<int:order_id>/order-item/<int:pk>/delete/',
+         views.DeleteOrderItemView.as_view(), name='delete-order-item'),
 
     # manage-dashboard
     path('manage-dashboard/', views.total_sales_by_date, name='manage-dashboard'),

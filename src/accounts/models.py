@@ -1,13 +1,15 @@
 import os
 from pathlib import Path
 
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.validators import RegexValidator
 from django.db import models
-from django.db.models.signals import pre_save, post_delete
+from django.db.models.signals import pre_save, post_delete, post_save
 from django.dispatch import receiver
 from django.utils import timezone
+from django.db.models import Q
 
 from .managers import UserManager
 
@@ -85,8 +87,8 @@ class User(AbstractUser):
             today.year
             - self.date_of_birth.year
             - (
-                (today.month, today.day)
-                < (self.date_of_birth.month, self.date_of_birth.day)
+                    (today.month, today.day)
+                    < (self.date_of_birth.month, self.date_of_birth.day)
             )
         )
         return age
@@ -145,6 +147,47 @@ class Staff(User):
         self.is_staff = True
         super().save(*args, **kwargs)
 
+        if not self.groups.filter(name='staff').exists():
+            if qs := Group.objects.filter(name='staff'):
+                staff_group = qs.first()
+            else:
+                staff_group = Group.objects.create(name='staff')
+                order_item = ContentType.objects.get(app_label='order', model='orderitem')
+                order = ContentType.objects.get(app_label='order', model='order')
+                menu_item = ContentType.objects.get(app_label='menu', model='menuitem')
+                menu_category = ContentType.objects.get(app_label='menu', model='menucategory')
+                permissions = Permission.objects.filter(
+                    Q(content_type=menu_item) |
+                    Q(content_type=order) |
+                    Q(content_type=order_item) |
+                    Q(content_type=menu_category)
+                )
+                staff_group.permissions.set(permissions)
+            self.groups.add(staff_group)
+    # def save(self, *args, **kwargs):
+    #     self.is_staff = True
+    #     if not self.pk:
+    #         super().save(*args, **kwargs)
+    #
+    #         if qs := Group.objects.filter(name='staff'):
+    #             staff_group = qs.first()
+    #         else:
+    #             staff_group = Group.objects.create(name='staff')
+    #             order_item = ContentType.objects.get(app_label='order', model='orderitem')
+    #             order = ContentType.objects.get(app_label='order', model='order')
+    #             menu_item = ContentType.objects.get(app_label='menu', model='menuitem')
+    #             menu_category = ContentType.objects.get(app_label='menu', model='menucategory')
+    #             permissions = Permission.objects.filter(
+    #                 Q(content_type=menu_item) |
+    #                 Q(content_type=order) |
+    #                 Q(content_type=order_item) |
+    #                 Q(content_type=menu_category)
+    #             )
+    #             staff_group.permissions.set(permissions)
+    #         self.groups.add(staff_group)
+    #
+    #     super().save(*args, **kwargs)
+
 
 class Customer(User):
     balance = models.IntegerField(default=0, blank=False)
@@ -160,19 +203,24 @@ def delete_customer_profile_photo(sender, instance: User, **kwargs):
         if os.path.isfile(instance.photo.path):
             os.remove(instance.photo.path)
 
-
-# @receiver(pre_save, sender=User)
-# def delete_old_customer_profile_photo(sender, instance: User, **kwargs):
-#     if not instance.id:
-#         return False
+# @receiver(post_save, sender=Staff)  # Replace 'User' with your custom user model if you have one
+# def add_staff_group(sender, instance, created, **kwargs):
+#     if created and instance.is_staff:
+#         if qs := Group.objects.filter(name='staff'):
+#             staff_group = qs.first()
+#         else:
+#             staff_group = Group.objects.create(name='staff')
+#             order_item = ContentType.objects.get(app_label='order', model='orderitem')
+#             order = ContentType.objects.get(app_label='order', model='order')
+#             menu_item = ContentType.objects.get(app_label='menu', model='menuitem')
+#             menu_category = ContentType.objects.get(app_label='menu', model='menucategory')
+#             permissions = Permission.objects.filter(
+#                 Q(content_type=menu_item) |
+#                 Q(content_type=order) |
+#                 Q(content_type=order_item) |
+#                 Q(content_type=menu_category)
+#             )
+#             staff_group.permissions.set(permissions)
 #
-#     try:
-#         old_person = User.objects.get(id=instance.id)
-#     except Customer.DoesNotExist:
-#         return False
-#
-#     # TODO: What if my 'upload_to' uses a method that generate file name from username?
-#     # TODO: What if the user's photo is 'default_profile_?
-#     if old_person.photo:
-#         if os.path.isfile(old_person.photo.path):
-#             os.remove(old_person.photo.path)
+#         instance.groups.add(staff_group)
+#         instance.save()

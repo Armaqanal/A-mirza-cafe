@@ -176,7 +176,6 @@ class DeleteOrderItemView(PermissionRequiredMixin, DeleteView):
     def get_success_url(self):
         return reverse_lazy("manage-order-items", kwargs={'order_id': self.kwargs.get('order_id')})
 
-
 @staff_member_required
 def total_sales_by_date(request):
     sales_by_year = None

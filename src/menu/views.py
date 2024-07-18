@@ -14,6 +14,7 @@ class MenuListView(ListView):
     """Displays Menu"""
     template_name = 'menu/menu.html'
     context_object_name = 'menu_items'
+    paginate_by = 6
 
     def get_queryset(self):
         queryset = MenuItem.objects.all()

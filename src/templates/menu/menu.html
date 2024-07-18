@@ -59,8 +59,8 @@
             <div class="filters-content">
                 <div class="row grid">
 
-                    {% if menu_items %}
-                        {% for menu_item in menu_items %}
+                    {% if page_obj %}
+                        {% for menu_item in page_obj %}
 
                             <div class="col-sm-6 col-lg-4 all {{ category.label|slugify }} ">
 
@@ -113,7 +113,8 @@
                                                         <form action="{% url 'add-menu-item-to-cart' menu_item.slug %}"
                                                               method="post">
                                                             {% csrf_token %}
-                                                            <button type="submit" class="btn btn-warning p-2 rounded-circle">
+                                                            <button type="submit"
+                                                                    class="btn btn-warning p-2 rounded-circle">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="1.5em"
                                                                      height="1.5em" viewBox="0 0 56 56">
                                                                     <path fill="currentColor"
@@ -138,11 +139,57 @@
 
                 </div>
             </div>
-            <div class="btn-box">
-                <a href="{% url 'menu' 'all' %}">
-                    View More
-                </a>
-            </div>
+
+            <!-- pagination -->
+            <nav class="d-flex justify-content-center mx-auto my-5" aria-label="Page navigation example">
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="{% url 'menu' selected_category %}?page={{ page_obj.previous_page_number }}"
+                               aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link"
+                               href="#"
+                               aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="{% url 'menu' selected_category %}?page={{ page_obj.next_page_number }}"
+                               aria-label="Previous">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link"
+                               href="#"
+                               aria-label="Previous">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            <!-- pagination -->
+            <!-- view more -->
+            {#            <div class="btn-box">#}
+            {#                <a href="{% url 'menu' 'all' %}">#}
+            {#                    View More#}
+            {#                </a>#}
+            {#            </div>#}
+            <!-- view more -->
         </div>
     </section>
 

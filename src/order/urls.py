@@ -3,6 +3,9 @@ from . import views
 
 urlpatterns = [
     path('cart/', views.CartListView.as_view(), name='cart'),
+    path('cart/pay/', views.PayCartView.as_view(), name='pay-cart'),
+    path('cart-item/<int:pk>/update/', views.CartItemUpdateView.as_view(), name='cart-item-update'),
+    path('cart-item/<int:pk>/delete/', views.CartItemDeleteView.as_view(), name='cart-item-delete'),
     path('order/', views.MyOrdersListView.as_view(), name='my-orders'),
     path('add/menu-item/<slug:menu_item_slug>/to/cart/',
          views.AddMenuItemToCartView.as_view(),

@@ -1,7 +1,10 @@
 from typing import Any
+
+from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin,PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
+from django.db.models import Sum
 from django.db.models.query import QuerySet
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -33,6 +36,13 @@ class CartListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     context_object_name = "unpaid_order_items"
     customer = None
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qs = self.get_queryset()
+        qs = qs.aggregate(sum=Sum("total_discounted_price", default=0))
+        context["sum"] = qs['sum']
+        return context
+
     def test_func(self):
         if qs := Customer.objects.filter(id=self.request.user.id):
             self.customer = qs.first()
@@ -41,7 +51,64 @@ class CartListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_queryset(self):
         unpaid_order = Order.objects.get_unpaid_order(customer_id=self.customer.id)
-        return super().get_queryset().filter(order=unpaid_order, )
+        return super().get_queryset().filter(order=unpaid_order)
+
+
+class CartItemUpdateView(LoginRequiredMixin, UserPassesTestMixin, View):
+
+    def test_func(self):
+        if Customer.objects.filter(id=self.request.user.id).exists():
+            return True
+        return False
+
+    def post(self, request, *args, **kwargs):
+        cart_item = get_object_or_404(OrderItem, pk=self.kwargs['pk'])
+        if '+' in request.POST:
+            cart_item.add_quantity_by_one()
+        if '-' in request.POST:
+            cart_item.subtract_quantity_by_one()
+        return redirect('cart')
+
+
+class CartItemDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = OrderItem
+    customer = None
+
+    def test_func(self):
+        if qs := Customer.objects.filter(id=self.request.user.id):
+            self.customer = qs.first()
+            return True
+        return False
+
+    def get_queryset(self):
+        unpaid_order = Order.objects.get_unpaid_order(customer_id=self.customer.id)
+        return super().get_queryset().filter(order=unpaid_order)
+
+    def form_valid(self, form):
+        messages.success(self.request, f"Cart item `{self.object}` was deleted.")
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('cart')
+
+
+class PayCartView(LoginRequiredMixin, UserPassesTestMixin, View):
+    customer = None
+
+    def test_func(self):
+        if qs := Customer.objects.filter(id=self.request.user.id):
+            self.customer = qs.first()
+            return True
+        return False
+
+    def post(self, request, *args, **kwargs):
+        try:
+            unpaid_order = Order.objects.get_unpaid_order(customer_id=self.customer.id)
+            unpaid_order.is_paid = True
+            unpaid_order.save()
+        except Order.DoesNotExist:
+            pass
+        return redirect('menu', slug='all')
 
 
 class MyOrdersListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -165,6 +232,7 @@ class DeleteOrderItemView(PermissionRequiredMixin, DeleteView):
 
     def get_success_url(self):
         return reverse_lazy("manage-order-items", kwargs={'order_id': self.kwargs.get('order_id')})
+
 
 @staff_member_required
 def total_sales_by_date(request):

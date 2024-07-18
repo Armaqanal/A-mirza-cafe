@@ -110,7 +110,7 @@ class MenuItemUpdateView(PermissionRequiredMixin, UpdateView):
     extra_context = {'action_type': 'Editing'}
 
     def form_valid(self, form):
-        messages.info(self.request, f"Menu Item `{form.instance}` was successfully updated.")
+        messages.success(self.request, f"Menu Item `{form.instance}` was successfully updated.")
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -122,7 +122,7 @@ class MenuItemDeleteView(PermissionRequiredMixin, DeleteView):
     model = MenuItem
 
     def form_valid(self, form):
-        messages.warning(self.request, f"Menu item `{self.object}` was deleted.")
+        messages.success(self.request, f"Menu item `{self.object}` was deleted.")
         return super().form_valid(form)
 
     def get_success_url(self):

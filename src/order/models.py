@@ -46,6 +46,16 @@ class OrderItem(DateFieldsMixin, models.Model):
         related_name='order_items',
     )
 
+    def add_quantity_by_one(self):
+        if (self.quantity + 1) <= 100:
+            self.quantity += 1
+            self.save()
+
+    def subtract_quantity_by_one(self):
+        if (self.quantity - 1) >= 1:
+            self.quantity -= 1
+            self.save()
+
     def save(self, *args, **kwargs):
         if not self.pk:
             self.price = self.menu_item.price

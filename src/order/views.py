@@ -1,4 +1,5 @@
 from typing import Any
+from django.contrib.sessions.models import Session
 
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
@@ -25,7 +26,7 @@ from .utils import (
     total_sales_by_month_year,
     top_year_month_based_on_sales,
     top_sales_by_year_month_day,
-    demography_items,
+    # demography_items,
 )
 import csv
 
@@ -268,18 +269,19 @@ def total_sales_by_date(request):
             "best_year": best_year,
             "best_year_month": best_year_month,
             "best_year_month_day": best_year_month_day,
-            "data_items": list(demography_items()),
+            # "data_items": list(demography_items()),
         },
     )
-    return render(request, 'order/dashboard.html', {
-        'form': form,
-        'sales_by_year': sales_by_year,
-        'sales_by_month_year': sales_by_month_year,
-        'sales_by_month_year_day': sales_by_month_year_day,
-        'best_year': best_year,
-        'best_year_month': best_year_month,
-        'best_year_month_day': best_year_month_day
-    })
+    # return render(request, 'order/dashboard.html', {
+    #     'form': form,
+    #     'sales_by_year': sales_by_year,
+    #     'sales_by_month_year': sales_by_month_year,
+    #     'sales_by_month_year_day': sales_by_month_year_day,
+    #     'best_year': best_year,
+    #     'best_year_month': best_year_month,
+    #     'best_year_month_day': best_year_month_day
+    # })
+    #
 
 
 @staff_member_required

@@ -143,14 +143,10 @@ class Staff(User):
         verbose_name = "staff"
         verbose_name_plural = "staffs"
 
-    def save(self, *args, **kwargs):
-        self.is_staff = True
-        super().save(*args, **kwargs)
-
+    def set_permissions(self):
         if not self.groups.filter(name='staff').exists():
-            if qs := Group.objects.filter(name='staff'):
-                staff_group = qs.first()
-            else:
+            staff_group, created = Group.objects.get_or_create(name='staff')
+            if created:
                 staff_group = Group.objects.create(name='staff')
                 order_item = ContentType.objects.get(app_label='order', model='orderitem')
                 order = ContentType.objects.get(app_label='order', model='order')
@@ -163,30 +159,13 @@ class Staff(User):
                     Q(content_type=menu_category)
                 )
                 staff_group.permissions.set(permissions)
+
             self.groups.add(staff_group)
-    # def save(self, *args, **kwargs):
-    #     self.is_staff = True
-    #     if not self.pk:
-    #         super().save(*args, **kwargs)
-    #
-    #         if qs := Group.objects.filter(name='staff'):
-    #             staff_group = qs.first()
-    #         else:
-    #             staff_group = Group.objects.create(name='staff')
-    #             order_item = ContentType.objects.get(app_label='order', model='orderitem')
-    #             order = ContentType.objects.get(app_label='order', model='order')
-    #             menu_item = ContentType.objects.get(app_label='menu', model='menuitem')
-    #             menu_category = ContentType.objects.get(app_label='menu', model='menucategory')
-    #             permissions = Permission.objects.filter(
-    #                 Q(content_type=menu_item) |
-    #                 Q(content_type=order) |
-    #                 Q(content_type=order_item) |
-    #                 Q(content_type=menu_category)
-    #             )
-    #             staff_group.permissions.set(permissions)
-    #         self.groups.add(staff_group)
-    #
-    #     super().save(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        self.is_staff = True
+        super().save(*args, **kwargs)
+        self.set_permissions()
 
 
 class Customer(User):

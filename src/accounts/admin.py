@@ -144,46 +144,9 @@ class StaffAdmin(AMirzaUserAdmin):
           }),
     )
 
-    # def save_model(self, request, obj, form, change):
-    #     super().save_model(request, obj, form, change)
-    #     if qs := Group.objects.filter(name='staff'):
-    #         staff_group = qs.first()
-    #     else:
-    #         staff_group = Group.objects.create(name='staff')
-    #         order_item = ContentType.objects.get(app_label='order', model='orderitem')
-    #         order = ContentType.objects.get(app_label='order', model='order')
-    #         menu_item = ContentType.objects.get(app_label='menu', model='menuitem')
-    #         menu_category = ContentType.objects.get(app_label='menu', model='menucategory')
-    #         permissions = Permission.objects.filter(
-    #             Q(content_type=menu_item) |
-    #             Q(content_type=order) |
-    #             Q(content_type=order_item) |
-    #             Q(content_type=menu_category)
-    #         )
-    #         staff_group.permissions.set(permissions)
-    #     obj.groups.add(staff_group)
-    #     obj.save()
-
-    def save_model(self, request, obj, form, change):
-        super().save_model(request, obj, form, change)
-        if not obj.groups.filter(name='staff').exists():
-            if qs := Group.objects.filter(name='staff'):
-                staff_group = qs.first()
-            else:
-                staff_group = Group.objects.create(name='staff')
-                order_item = ContentType.objects.get(app_label='order', model='orderitem')
-                order = ContentType.objects.get(app_label='order', model='order')
-                menu_item = ContentType.objects.get(app_label='menu', model='menuitem')
-                menu_category = ContentType.objects.get(app_label='menu', model='menucategory')
-                permissions = Permission.objects.filter(
-                    Q(content_type=menu_item) |
-                    Q(content_type=order) |
-                    Q(content_type=order_item) |
-                    Q(content_type=menu_category)
-                )
-                staff_group.permissions.set(permissions)
-            obj.groups.add(staff_group)
-        obj.save()
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        form.instance.set_permissions()
 
 
 admin.site.register(Staff, StaffAdmin)

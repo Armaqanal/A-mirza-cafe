@@ -182,24 +182,3 @@ def delete_customer_profile_photo(sender, instance: User, **kwargs):
         if os.path.isfile(instance.photo.path):
             os.remove(instance.photo.path)
 
-# @receiver(post_save, sender=Staff)  # Replace 'User' with your custom user model if you have one
-# def add_staff_group(sender, instance, created, **kwargs):
-#     if created and instance.is_staff:
-#         if qs := Group.objects.filter(name='staff'):
-#             staff_group = qs.first()
-#         else:
-#             staff_group = Group.objects.create(name='staff')
-#             order_item = ContentType.objects.get(app_label='order', model='orderitem')
-#             order = ContentType.objects.get(app_label='order', model='order')
-#             menu_item = ContentType.objects.get(app_label='menu', model='menuitem')
-#             menu_category = ContentType.objects.get(app_label='menu', model='menucategory')
-#             permissions = Permission.objects.filter(
-#                 Q(content_type=menu_item) |
-#                 Q(content_type=order) |
-#                 Q(content_type=order_item) |
-#                 Q(content_type=menu_category)
-#             )
-#             staff_group.permissions.set(permissions)
-#
-#         instance.groups.add(staff_group)
-#         instance.save()

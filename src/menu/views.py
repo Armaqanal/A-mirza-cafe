@@ -84,8 +84,9 @@ class CategoryDeleteView(PermissionRequiredMixin, DeleteView):
     model = MenuCategory
 
     def form_valid(self, form):
+        response = super().form_valid(form)
         messages.warning(self.request, f"Category `{self.object}` was deleted.")
-        return super().form_valid(form)
+        return response
 
     def get_success_url(self):
         return reverse_lazy('manage-category-list')

@@ -39,7 +39,7 @@ class OrderItem(DateFieldsMixin, models.Model):
     quantity = models.PositiveSmallIntegerField(default=0, blank=True,
                                                 validators=[MaxValueValidator(100)])
     total_discounted_price = models.PositiveIntegerField(default=0, blank=True)
-    menu_item = models.ForeignKey(MenuItem, on_delete=models.DO_NOTHING)
+    menu_item = models.ForeignKey(MenuItem,null=True, on_delete=models.SET_NULL)
     order = models.ForeignKey(
         Order,
         on_delete=models.CASCADE,

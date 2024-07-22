@@ -26,8 +26,8 @@ urlpatterns = [
     path('remove/staff/', views.remove_all_staffs, name='remove-all-staffs'),
     path('remove/customer/', views.remove_all_customers, name='remove-all-customers'),
 
-    path('profile/', views.profile, name='profile'),
-    path('history/', views.order_history, name='history'),
+    # path('profile/', views.profile, name='profile'),
+    # path('history/', views.order_history, name='history'),
 
 
     # staff_add_part

@@ -1,42 +1,22 @@
 from django.urls import path
+
 from . import views
 
 urlpatterns = [
-    # website
-    path('', views.home, name='website-home'),
-    path('about/', views.about, name='website-about'),
-    path('book/', views.book, name='book'),
 
-    # menu
-    # path('menu/<slug:selected_category>?query=foodname', views.menu, name='menu-category'),
+    path('menu/<slug:slug>/', views.MenuListView.as_view(), name='menu'),
 
-    # persian slug
-    # re_path(r'category/(?P<slug>[\w-]+)/restaurants/$', views.category_restaurants_by_slug,
-    #         name='category-slug-restaurants'),
+    # staff specific views
+    path('manage/category/list/', views.CategoryListView.as_view(), name='manage-category-list'),
+    path('manage/category/<slug:slug>/detail', views.CategoryDetailView.as_view(), name='category-detail'),
+    path('manage/menu-item/add/', views.MenuItemCreateView.as_view(), name='manage-menu-item-add'),
+    path('manage/category/<slug:category_slug>/menu-item/<slug:slug>/update/', views.MenuItemUpdateView.as_view(),
+         name='manage-menu-item-update'),
+    path('manage/category/<slug:category_slug>/menu-item/<slug:slug>/delete/', views.MenuItemDeleteView.as_view(),
+         name='manage-menu-item-delete'),
 
-    # not important
-    path('mock/', views.mock_all, name='mock-all'),
-    path('mock/staff/', views.mock_staffs, name='mock-staffs'),
-    path('mock/customer/', views.mock_customers, name='mock-customer'),
-    path('mock/menu/', views.mock_menu_item, name='menu-mock'),
-    path('mock/category/', views.mock_menu_category, name='category-mock'),
-    path('remove/', views.remove_all, name='remove-all'),
-    path('remove/category/', views.remove_all_categories, name='remove-all-categories'),
-    path('remove/menu/', views.remove_all_menu_items, name='remove-all-menu-items'),
-    path('remove/staff/', views.remove_all_staffs, name='remove-all-staffs'),
-    path('remove/customer/', views.remove_all_customers, name='remove-all-customers'),
-
-    # path('profile/', views.profile, name='profile'),
-    # path('history/', views.order_history, name='history'),
-
-
-    # staff_add_part
-    path('manage-menu/', views.manage_view, name='manage-menu'),
-
-    # Generic Views
-    path('menu/<slug:slug>/', views.MenuListView.as_view(), name='menu-category'),
-    path('manage-menu/add-category/', views.CategoryCreateView.as_view(), name='add-menu-categories'),
-    path('manage-menu/add-item/', views.MenuItemCreateView.as_view(), name='add-menu-item'),
+    path('manage/category/create/', views.CategoryCreateView.as_view(), name='manage-category-create'),
+    path('manage/category/<slug:slug>/update/', views.CategoryUpdateView.as_view(), name='manage-category-update'),
+    path('manage/category/<slug:slug>/delete/', views.CategoryDeleteView.as_view(), name='manage-category-delete'),
 
 ]
-

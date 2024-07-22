@@ -4,25 +4,16 @@ from menu.models import MenuCategory
 from menu.models import MenuItem
 
 
-class AddCategoryForm(forms.ModelForm):
+class CategoryForm(forms.ModelForm):
     class Meta:
         model = MenuCategory
-        fields = '__all__'
-        widgets = {
-            'label': forms.TextInput()
-        }
+        exclude = ['slug']
 
 
-class AddMenuItem(forms.ModelForm):
+class MenuItemForm(forms.ModelForm):
     class Meta:
         model = MenuItem
-        fields = '__all__'
+        exclude = ['created_at', 'updated_at', 'slug']
         widgets = {
-            'food_name': forms.TextInput(),
             'description': forms.Textarea(),
-            'price': forms.NumberInput(),
-            'discount': forms.NumberInput(),
-            'inventory': forms.NumberInput(),
-            'image': forms.FileInput(),
-            'menu_category': forms.Select(),
         }

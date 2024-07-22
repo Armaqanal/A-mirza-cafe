@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 # Create your tests here.
 from django.urls import reverse
-from user.models import Staff
+from accounts.models import Staff
 
 from .models import MenuItem, MenuCategory
 
@@ -36,7 +36,7 @@ class MenuItemCreateViewTests(TestCase):
         # self.client.login(username='customer_test', password='arsalan123')
 
     def test_permission_required(self):
-        response = self.client.get(reverse('add-menu-item'))
+        response = self.client.get(reverse('manage-menu-item-add'))
         self.assertEqual(response.status_code, 200)
 
     def test_create_menu_item_post_view(self):
@@ -45,7 +45,7 @@ class MenuItemCreateViewTests(TestCase):
                 'discount': 1.0,
                 'inventory': 3,
                 'menu_category': 'see'}
-        response = self.client.post(reverse('add-menu-item'), data=data)
+        response = self.client.post(reverse('manage-menu-item-add'), data=data)
         self.assertEqual(response.status_code, 200)
 
     # def test_redirection(self):
@@ -69,13 +69,13 @@ class CategoryCreateViewTests(TestCase):
         self.client.login(username='staff3_test', password='arsalan123')
 
     def test_permission_required(self):
-        response = self.client.get(reverse('add-menu-categories'))
+        response = self.client.get(reverse('manage-category-create'))
         self.assertEqual(response.status_code, 200)
 
     def test_create_category_post_view(self):
         data = {'label': 'blueberry'}
         '''follow=True -->I redirected it to the newly created category'''
-        response = self.client.post(reverse('add-menu-categories'), data=data, follow=True)
+        response = self.client.post(reverse('manage-category-create'), data=data, follow=True)
         self.assertEqual(response.status_code, 200)
 
 

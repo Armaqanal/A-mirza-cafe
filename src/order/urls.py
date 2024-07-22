@@ -2,39 +2,36 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('cart/', views.CartView.as_view(), name='cart'),
-    path('order/', views.OrderView.as_view(), name='order'),
-    path('submit-order/<str:selected_category>/<int:menu_item_id>/',
-         views.add_menu_item_to_cart,
+    path('cart/', views.CartListView.as_view(), name='cart'),
+    path('cart/pay/', views.PayCartView.as_view(), name='pay-cart'),
+    path('cart-item/<int:pk>/update/', views.CartItemUpdateView.as_view(), name='cart-item-update'),
+    path('cart-item/<int:pk>/delete/', views.CartItemDeleteView.as_view(), name='cart-item-delete'),
+    path('order/', views.MyOrdersListView.as_view(), name='my-orders'),
+    path('add/menu-item/<slug:menu_item_slug>/to/cart/',
+         views.AddMenuItemToCartView.as_view(),
          name='add-menu-item-to-cart'
          ),
-    path('customer/orders/', views.customer_orders_view, name='customer_orders'),
 
     # order-management
-    path('manage-orders/', views.ManageOrderView.as_view(), name='manage-orders'),
-    path('manage-orders/add-order', views.add_order, name='add-order'),
-    # path('manage-orders/edit-order/<int:order_id>/', views.edit_order, name='edit-order'),
-    path('manage-orders/delete-order/<int:order_id>/', views.delete_order, name='delete-order'),
-    path('manage-orders/edit-order/<int:order_id>/', views.edit_order, name='edit-order'),
-    path('manage-orders/<int:pk>/delete/', views.DeleteOrderView.as_view(), name='delete-order'),
+    path('orders/', views.ManageOrderView.as_view(), name='manage-orders'),
+    path('manage/order/add/', views.OrderCreateView.as_view(), name='add-order'),
+    path('manage/order/<int:pk>/edit', views.OrderUpdateView.as_view(), name='edit-order'),
+    path('manage/order/<int:pk>/delete/', views.DeleteOrderView.as_view(), name='delete-order'),
 
     # order-item-management
-    path('manage-orders/<int:order_id>/manage-order-items/', views.ManageOrderItemView.as_view(), name='manage-order-items'),
-    path('manage-orders/<int:order_id>/manage-order-items/add-order-item/', views.add_order_item,
+    path('manage/order/<int:order_id>/order-item/', views.ManageOrderItemsListView.as_view(),
+         name='manage-order-items'),
+    path('manage/order/<int:order_id>/order-item/add/', views.OrderItemCreateView.as_view(),
          name='add-order-item'),
-    path('manage-orders/<int:order_id>/manage-order-items/<int:order_item_id>/edit-order-item/', views.edit_order_item,
+    path('manage/order/<int:order_id>/order-item/<int:pk>/edit/', views.EditOrderItemView.as_view(),
          name='edit-order-item'),
-    path('manage-orders/<int:order_id>/manage-order-items/<int:pk>/delete/',
-         views.DeleteOrderItem.as_view(), name='delete-order-item'),
+    path('manage/order/<int:order_id>/order-item/<int:pk>/delete/',
+         views.DeleteOrderItemView.as_view(), name='delete-order-item'),
 
     # manage-dashboard
     path('manage-dashboard/', views.total_sales_by_date, name='manage-dashboard'),
     path('manage-dashboard/sales-by-y', views.total_sales_by_year_csv, name='total_sales_by_year_csv'),
     path('manage-dashboard/sales-by-y-m', views.total_sales_by_month_year_csv, name='total_sales_by_month_year_csv'),
     path('manage-dashboard/sales-by-y-m-d', views.total_sales_by_year_month_day_csv,
-         name='total_sales_by_year_month_day_csv'),
-
-    # cbv order/order item
-    path('order/add', views.AddOrderView.as_view(), name='create-order-form'),
-    path('edit/<int:order_id>/', views.EditOrderView.as_view(), name='edit-order'),
+         name='total_sales_by_year_month_day_csv')
 ]

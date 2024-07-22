@@ -1,11 +1,11 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import UserChangeForm
+from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 
-from user.models import Customer
-from .models import User
+from .models import Customer, Staff
 
 User = get_user_model()
 
@@ -34,20 +34,6 @@ class LoginForm(AuthenticationForm):
                 'id': 'password'
             }
         )
-
-
-class UserLoginForm(forms.ModelForm):
-    username = forms.CharField(max_length=100)
-    password = forms.CharField(widget=forms.PasswordInput, max_length=63)
-    email = forms.EmailField(max_length=90)
-    phone_number = forms.CharField(max_length=100)
-
-    class Meta:
-        model = User
-        fields = ['username', 'password', 'email', 'phone_number']
-        widgets = {
-            'password': forms.PasswordInput()
-        }
 
 
 class DateInput(forms.DateInput):
@@ -110,3 +96,27 @@ class CustomerRegisterForm(UserCreationForm):
         widgets = {
             'date_of_birth': DateInput
         }
+
+
+class CustomerCreationForm(UserCreationForm):
+    class Meta:
+        model = Customer
+        fields = ['email']
+
+
+class CustomerChangeForm(UserChangeForm):
+    class Meta:
+        model = Customer
+        fields = ['email']
+
+
+class StaffCreationForm(UserCreationForm):
+    class Meta:
+        model = Staff
+        fields = '__all__'
+
+
+class StaffChangeForm(UserChangeForm):
+    class Meta:
+        model = Staff
+        fields = '__all__'

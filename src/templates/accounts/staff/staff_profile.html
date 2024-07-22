@@ -1,0 +1,31 @@
+{% extends 'accounts/user/../../accounts/user_profile.html' %}
+
+{% block extera_profile_data %}
+
+    <div class="row">
+        <div class="col-sm-3">
+            <h6 class="mb-0">Role</h6>
+        </div>
+        <div class="col-sm-9 text-secondary">
+            {{ staff.role }}
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-sm-3">
+            <h6 class="mb-0">Salary</h6>
+        </div>
+        <div class="col-sm-9 text-secondary">
+            {{ staff.salary }}
+        </div>
+    </div>
+    <hr>
+
+{% endblock extera_profile_data %}
+
+{% block edit_button %}
+
+    <a class="btn btn-info " target="__blank"
+       href="https://www.bootdey.com/snippets/view/profile-edit-data-and-skills">Edit</a>
+
+{% endblock %}

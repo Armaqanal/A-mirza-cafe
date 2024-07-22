@@ -3,8 +3,8 @@ from django.test import TestCase
 from django.test.client import RequestFactory, Client
 from django.urls import reverse
 
-from user.models import Customer
-from .forms import LoginForm, CustomerRegisterForm
+from ..models import Customer
+from ..forms import LoginForm, CustomerRegisterForm
 
 User = get_user_model()
 

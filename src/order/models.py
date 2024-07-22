@@ -1,10 +1,11 @@
-from django.conf import settings
 from django.core.validators import MaxValueValidator
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, IntegerField, Value
+from django.db.models.functions import Coalesce
 from menu.models import MenuItem
-from user.models import DateFieldsMixin, Customer
-from django.urls import reverse_lazy
+from accounts.models import DateFieldsMixin, Customer
+from menu.models import MenuItem
+from .managers import OrderManager
 
 
 class Order(DateFieldsMixin, models.Model):
@@ -12,33 +13,14 @@ class Order(DateFieldsMixin, models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     is_paid = models.BooleanField(default=False)
 
-    # cbv add order
-    def get_absolute_url(self):
-        return reverse_lazy('order-detail', kwargs={'pk': self.id})
-
-    def __str__(self):
-        return f'order {self.id}-{self.customer}'
+    objects = OrderManager()
 
     def calculate_total_order_item_price(self):
-        self.total_order_item_prices = self.order_items.aggregate(sum=Sum('total_discounted_price'))['sum']
-
-    def __str__(self):
-        return self.customer
-
-
-
-    class Meta:
-        permissions = [('manager_add_order', 'manager can add order')]
-    @classmethod
-    def get_unpaid_order(cls, customer_id=61):
-        """"""
-        last_unpaid_order, new_unpaid_order = cls.objects.get_or_create(customer_id=customer_id, is_paid=False)
-        return last_unpaid_order or new_unpaid_order
-
-    def update_from_cleaned_data(self, cleaned_data: dict):
-        self.customer = cleaned_data['customer']
-        self.is_paid = True
-        self.save()
+        self.total_order_item_prices = self.order_items.aggregate(
+            sum=Coalesce(
+                Sum('total_discounted_price'), Value(0)
+            )
+        )['sum']
 
     def save(self, *args, **kwargs):
         if self.pk:
@@ -57,20 +39,22 @@ class OrderItem(DateFieldsMixin, models.Model):
     quantity = models.PositiveSmallIntegerField(default=0, blank=True,
                                                 validators=[MaxValueValidator(100)])
     total_discounted_price = models.PositiveIntegerField(default=0, blank=True)
-    menu_item = models.ForeignKey(MenuItem, on_delete=models.DO_NOTHING)
+    menu_item = models.ForeignKey(MenuItem,null=True, on_delete=models.SET_NULL)
     order = models.ForeignKey(
         Order,
         on_delete=models.CASCADE,
         related_name='order_items',
     )
 
-    def update_from_cleaned_data(self, cleaned_data: dict):
-        self.price = cleaned_data['price']
-        self.discounted_price = cleaned_data['discounted_price']
-        self.quantity = cleaned_data['quantity']
-        self.menu_item = cleaned_data['menu_item']
-        self.order = cleaned_data['order']
-        self.save()
+    def add_quantity_by_one(self):
+        if (self.quantity + 1) <= 100:
+            self.quantity += 1
+            self.save()
+
+    def subtract_quantity_by_one(self):
+        if (self.quantity - 1) >= 1:
+            self.quantity -= 1
+            self.save()
 
     def save(self, *args, **kwargs):
         if not self.pk:

@@ -46,8 +46,8 @@ INSTALLED_APPS = [
     # my apps
     'menu',
     'order',
-    'user',
-    'accounts'
+    'accounts',
+    'mock_data'
 ]
 
 MIDDLEWARE = [
@@ -76,6 +76,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'accounts.context_processor.header_section_parameters',
             ],
         },
     },
@@ -142,7 +143,7 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-AUTH_USER_MODEL = "user.User"
+AUTH_USER_MODEL = "accounts.User"
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
@@ -158,3 +159,5 @@ MESSAGE_TAGS = {
     messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-danger',
 }
+
+LOGIN_REDIRECT_URL = '/'

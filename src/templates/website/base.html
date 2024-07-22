@@ -18,12 +18,6 @@
     <!-- bootstrap core css -->
     <link rel="stylesheet" type="text/css" href="{% static 'website/css/bootstrap.css' %}"/>
 
-    <!-- templates -->
-    {% block css %}
-
-    {% endblock css %}
-    <link rel="stylesheet" href="{% static 'user/css/staff.css' %}">
-    <link rel="stylesheet" href="{% static 'user/css/all_staffs.css' %}">
 
     <!--owl slider stylesheet -->
     <link rel="stylesheet" type="text/css"
@@ -45,6 +39,10 @@
     <!-- responsive style -->
     <link href="{% static 'website/css/responsive.css' %}" rel="stylesheet"/>
 
+    <!-- templates -->
+    {% block css %}
+
+    {% endblock css %}
 </head>
 
 {% block body %}
@@ -63,6 +61,10 @@
         {% include 'website/sections/header_section.html' %}
     {% endblock header %}
     <!-- end header section -->
+
+    <!-- display messages -->
+    {% include 'website/sections/message_display.html' %}
+    <!-- display messages -->
 
     <!-- slider section -->
     {% block slide-section %}

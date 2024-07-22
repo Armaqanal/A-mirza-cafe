@@ -1,92 +1,136 @@
 from typing import Any
+from django.contrib.sessions.models import Session
+
+from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.http import HttpRequest, HttpResponse
-# from django.contrib.auth.decorators import login_required, permission_required
-from django.http import HttpResponse
-
-from django.db.models import Count, Sum
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
+from django.db.models import Sum
+from django.db.models.query import QuerySet
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse_lazy
-from django.views import View
+from django.views.generic import FormView, View
 
+from django.urls import reverse_lazy
 from menu.models import MenuItem
 from accounts.models import Customer
 from django.views.generic.base import TemplateView, RedirectView
 from django.views.generic.edit import DeleteView, CreateView, UpdateView
 from django.views.generic.list import ListView
 from .forms import EditOrderItemForm, AddOrderItemForm, AddOrderForm, TotalSalesFilter
-from accounts.models import Customer
-
-from .forms import EditOrderItemForm, AddOrderItemForm, AddOrderForm, TotalSalesFilter, EditOrderForm
 from .models import Order, OrderItem
-from .ultis import (
+from .utils import (
     total_sales_by_year_month_day,
     total_sales_by_year,
     top_year_based_on_sales,
     total_sales_by_month_year,
     top_year_month_based_on_sales,
     top_sales_by_year_month_day,
-    demography_items,
+    # demography_items,
 )
 import csv
 
-from django.views.generic import UpdateView, CreateView
-from .models import Order
-from django.urls import reverse_lazy
-from django.contrib.auth.mixins import PermissionRequiredMixin
 
-
-# def cart(request):
-#     username = request.COOKIES.get("username")
-#     customer = get_object_or_404(Customer, username=username)
-#     unpaid_order = Order.get_unpaid_order(customer_id=customer.id)
-#     unpaid_order_items = unpaid_order.order_items.all()
-#     context = {"unpaid_order_items": unpaid_order_items}
-#     return render(request, "order/cart.html", context)
-
-class CartView(TemplateView):
+class CartListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = OrderItem
     template_name = "order/cart.html"
-
-    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        self.username = self.request.session.get("username")
-        if self.username:
-            self.customer = get_object_or_404(Customer, username=self.username)
-            self.unpaid_order = Order.get_unpaid_order(customer_id=self.customer.id)
-            self.unpaid_order_item = self.unpaid_order.order_items.all()
-            return super(CartView, self).dispatch(request, *args, **kwargs)
+    context_object_name = "unpaid_order_items"
+    customer = None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["unpaid_order_items"] = self.unpaid_order_item
+        qs = self.get_queryset()
+        qs = qs.aggregate(sum=Sum("total_discounted_price", default=0))
+        context["sum"] = qs['sum']
         return context
 
+    def test_func(self):
+        if qs := Customer.objects.filter(id=self.request.user.id):
+            self.customer = qs.first()
+            return True
+        return False
 
-# def order(request):
-#     print(request.COOKIES.get("username"))
-#     return render(request, "order/order.html", {})
+    def get_queryset(self):
+        unpaid_order = Order.objects.get_unpaid_order(customer_id=self.customer.id)
+        return super().get_queryset().filter(order=unpaid_order)
 
-class OrderView(TemplateView):
+
+class CartItemUpdateView(LoginRequiredMixin, UserPassesTestMixin, View):
+
+    def test_func(self):
+        if Customer.objects.filter(id=self.request.user.id).exists():
+            return True
+        return False
+
+    def post(self, request, *args, **kwargs):
+        cart_item = get_object_or_404(OrderItem, pk=self.kwargs['pk'])
+        if '+' in request.POST:
+            cart_item.add_quantity_by_one()
+        if '-' in request.POST:
+            cart_item.subtract_quantity_by_one()
+        return redirect('cart')
+
+
+class CartItemDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = OrderItem
+    customer = None
+
+    def test_func(self):
+        if qs := Customer.objects.filter(id=self.request.user.id):
+            self.customer = qs.first()
+            return True
+        return False
+
+    def get_queryset(self):
+        unpaid_order = Order.objects.get_unpaid_order(customer_id=self.customer.id)
+        return super().get_queryset().filter(order=unpaid_order)
+
+    def form_valid(self, form):
+        messages.success(self.request, f"Cart item `{self.object}` was deleted.")
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('cart')
+
+
+class PayCartView(LoginRequiredMixin, UserPassesTestMixin, View):
+    customer = None
+
+    def test_func(self):
+        if qs := Customer.objects.filter(id=self.request.user.id):
+            self.customer = qs.first()
+            return True
+        return False
+
+    def post(self, request, *args, **kwargs):
+        try:
+            unpaid_order = Order.objects.get_unpaid_order(customer_id=self.customer.id)
+            unpaid_order.is_paid = True
+            unpaid_order.save()
+        except Order.DoesNotExist:
+            pass
+        return redirect('menu', slug='all')
+
+
+class MyOrdersListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     template_name = "order/order.html"
 
 
-def add_menu_item_to_cart(request, selected_category=None, menu_item_id=None):
-    username = request.COOKIES.get("username")
-    customer = get_object_or_404(Customer, username=username)
-    # page not found cases are:
-    # 1. the username is for a staff instead of a customer!
-    # 2. the cookie is expired
+class AddMenuItemToCartView(LoginRequiredMixin, UserPassesTestMixin, View):
+    customer = None
 
-    selected_menu_item = MenuItem.objects.get(id=menu_item_id)
-    print(selected_menu_item)
-    unpaid_order = Order.get_unpaid_order(customer_id=customer.id)
+    def test_func(self):
+        if qs := Customer.objects.filter(id=self.request.user.id):
+            self.customer = qs.first()
+            return True
+        return False
 
-    # check if this item has been already selected for the 'unpaid_order',
-    # if it exits get it and if it doesn't create it
-    order_item = OrderItem.objects.filter(order=unpaid_order).get_or_create(
-        menu_item=selected_menu_item, order=unpaid_order, quantity=1
-    )
-    return redirect("menu", selected_category)
+    def post(self, request, *args, **kwargs):
+        selected_menu_item = get_object_or_404(MenuItem, slug=self.kwargs.get("menu_item_slug"))
+        unpaid_order = Order.objects.get_unpaid_order(customer_id=self.customer.id)
+        if not OrderItem.objects.filter(order=unpaid_order, menu_item=selected_menu_item).exists():
+            OrderItem.objects.create(order=unpaid_order, menu_item=selected_menu_item, quantity=1)
+        return redirect('menu', slug=selected_menu_item.menu_category.slug)
 
 
 class ManageOrderView(PermissionRequiredMixin, ListView):
@@ -190,6 +234,7 @@ class DeleteOrderItemView(PermissionRequiredMixin, DeleteView):
     def get_success_url(self):
         return reverse_lazy("manage-order-items", kwargs={'order_id': self.kwargs.get('order_id')})
 
+
 @staff_member_required
 def total_sales_by_date(request):
     sales_by_year = None
@@ -219,18 +264,24 @@ def total_sales_by_date(request):
         {
             "form": form,
             "sales_by_year": sales_by_year,
-            'sales_by_month_year_day': sales_by_month_year_day,
-            'best_year': best_year,
-            'best_year_month': best_year_month,
-
             "sales_by_month_year": sales_by_month_year,
             "sales_by_month_year_day": sales_by_month_year_day,
             "best_year": best_year,
             "best_year_month": best_year_month,
             "best_year_month_day": best_year_month_day,
-            "data_items": list(demography_items()),
+            # "data_items": list(demography_items()),
         },
     )
+    # return render(request, 'order/dashboard.html', {
+    #     'form': form,
+    #     'sales_by_year': sales_by_year,
+    #     'sales_by_month_year': sales_by_month_year,
+    #     'sales_by_month_year_day': sales_by_month_year_day,
+    #     'best_year': best_year,
+    #     'best_year_month': best_year_month,
+    #     'best_year_month_day': best_year_month_day
+    # })
+    #
 
 
 @staff_member_required
@@ -286,43 +337,3 @@ def total_sales_by_year_month_day_csv(request):
         writer.writerow([row["year"], row["month"], row["day"], row["total_sales"]])
 
     return response
-
-
-def customer_orders_view(request):
-    customer_id = request.session.get('customer_id')
-    customer_orders = Order.objects.filter(customer_id=customer_id).annotate(
-        total_items=Count('items'),
-        total_amount=Sum('item_price')
-    )
-    context = {
-        'customer_orders': customer_orders
-    }
-    return render(request, 'customer_orders.html', context)
-
-
-# cbv order/order
-class AddOrderView(PermissionRequiredMixin, CreateView):
-    permission_required = 'order.add_order'
-    model = Order
-    form_class = AddOrderForm
-    template_name = 'order/order_form.html'
-
-    success_url = reverse_lazy('order_form.html')
-
-    def has_permission(self):
-        return self.request.user.is_staff
-
-
-class EditOrderView(PermissionRequiredMixin, UpdateView):
-    permission_required = 'order.edit_order'
-    model = Order
-    form_class = EditOrderForm
-    template_name = 'order/order_form.html'
-
-    def has_permission(self):
-        return self.request.user.is_staff
-
-    def get_object(self, queryset=None):
-        order_id = self.kwargs.get('order_id')
-        return get_object_or_404(Order, id=order_id)
-

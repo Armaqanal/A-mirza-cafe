@@ -1,22 +1,22 @@
 from django.urls import path
+
 from . import views
 
 urlpatterns = [
 
-    # menu
-    # path('menu/<slug:selected_category>?query=foodname', views.menu, name='menu-category'),
+    path('menu/<slug:slug>/', views.MenuListView.as_view(), name='menu'),
 
-    # path('profile/', views.profile, name='profile'),
-    # path('history/', views.order_history, name='history'),
+    # staff specific views
+    path('manage/category/list/', views.CategoryListView.as_view(), name='manage-category-list'),
+    path('manage/category/<slug:slug>/detail', views.CategoryDetailView.as_view(), name='category-detail'),
+    path('manage/menu-item/add/', views.MenuItemCreateView.as_view(), name='manage-menu-item-add'),
+    path('manage/category/<slug:category_slug>/menu-item/<slug:slug>/update/', views.MenuItemUpdateView.as_view(),
+         name='manage-menu-item-update'),
+    path('manage/category/<slug:category_slug>/menu-item/<slug:slug>/delete/', views.MenuItemDeleteView.as_view(),
+         name='manage-menu-item-delete'),
 
-
-    # staff_add_part
-    path('manage-menu/', views.manage_view, name='manage-menu'),
-
-    # Generic Views
-    path('menu/<slug:slug>/', views.MenuListView.as_view(), name='menu-category'),
-    path('manage-menu/add-category/', views.CategoryCreateView.as_view(), name='add-menu-categories'),
-    path('manage-menu/add-item/', views.MenuItemCreateView.as_view(), name='add-menu-item'),
+    path('manage/category/create/', views.CategoryCreateView.as_view(), name='manage-category-create'),
+    path('manage/category/<slug:slug>/update/', views.CategoryUpdateView.as_view(), name='manage-category-update'),
+    path('manage/category/<slug:slug>/delete/', views.CategoryDeleteView.as_view(), name='manage-category-delete'),
 
 ]
-

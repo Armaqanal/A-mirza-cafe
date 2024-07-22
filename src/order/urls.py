@@ -2,13 +2,15 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('cart/', views.CartView.as_view(), name='cart'),
-    path('order/', views.OrderView.as_view(), name='order'),
-    path('submit-order/<str:selected_category>/<int:menu_item_id>/',
-         views.add_menu_item_to_cart,
+    path('cart/', views.CartListView.as_view(), name='cart'),
+    path('cart/pay/', views.PayCartView.as_view(), name='pay-cart'),
+    path('cart-item/<int:pk>/update/', views.CartItemUpdateView.as_view(), name='cart-item-update'),
+    path('cart-item/<int:pk>/delete/', views.CartItemDeleteView.as_view(), name='cart-item-delete'),
+    path('order/', views.MyOrdersListView.as_view(), name='my-orders'),
+    path('add/menu-item/<slug:menu_item_slug>/to/cart/',
+         views.AddMenuItemToCartView.as_view(),
          name='add-menu-item-to-cart'
          ),
-    path('customer/orders/', views.customer_orders_view, name='customer_orders'),
 
     # order-management
     path('orders/', views.ManageOrderView.as_view(), name='manage-orders'),
@@ -31,9 +33,5 @@ urlpatterns = [
     path('manage-dashboard/sales-by-y', views.total_sales_by_year_csv, name='total_sales_by_year_csv'),
     path('manage-dashboard/sales-by-y-m', views.total_sales_by_month_year_csv, name='total_sales_by_month_year_csv'),
     path('manage-dashboard/sales-by-y-m-d', views.total_sales_by_year_month_day_csv,
-         name='total_sales_by_year_month_day_csv'),
-
-    # cbv order/order item
-    path('order/add', views.AddOrderView.as_view(), name='create-order-form'),
-    path('edit/<int:order_id>/', views.EditOrderView.as_view(), name='edit-order'),
+         name='total_sales_by_year_month_day_csv')
 ]

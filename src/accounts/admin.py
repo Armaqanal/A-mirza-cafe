@@ -8,6 +8,10 @@ from .forms import (
     StaffCreationForm
 )
 from .models import User, Customer, Staff
+from django.db.models import Q
+from django.contrib.auth.models import AbstractUser, Group, Permission
+
+from django.contrib.contenttypes.models import ContentType
 
 
 class AMirzaUserAdmin(UserAdmin):
@@ -139,6 +143,10 @@ class StaffAdmin(AMirzaUserAdmin):
          {"fields": ("is_superuser", "is_staff", "is_active", "groups", "user_permissions")
           }),
     )
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        form.instance.set_permissions()
 
 
 admin.site.register(Staff, StaffAdmin)

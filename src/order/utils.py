@@ -4,6 +4,7 @@ from django.db.models import Sum
 from django.db.models.functions import ExtractMonth, ExtractYear, ExtractDay
 import datetime
 
+
 # *************************Total sales by year ****************************
 def total_sales_by_year():
     sales_by_year = (
@@ -12,6 +13,8 @@ def total_sales_by_year():
         .annotate(total_sales=Sum("total_order_item_prices"))
         .order_by("year")
     )
+    # SELECT EXTRACT(year from "order"."created_at") as year,
+    # SUM("total_order_item_prices") as total_sum, FROM order GROUP BY "year" ORDER by "year"
     return sales_by_year
 
 
@@ -98,55 +101,54 @@ def top_sales_by_year_month_day():
     else:
         return None
 
-
-def demography_items():
-    items = MenuItem.objects.all()
-    for i in items:
-        item_data = {
-            "name": i.food_name,
-            "age": {
-                "3_8": {"man": 0, "woman": 0},
-                "9_12": {"man": 0, "woman": 0},
-                "13_7": {"man": 0, "woman": 0},
-                "18_26": {"man": 0, "woman": 0},
-                "27_40": {"man": 0, "woman": 0},
-                "41_60": {"man": 0, "woman": 0},
-                "61_above": {"man": 0, "woman": 0},
-            },
-            "man": 0,
-            "woman": 0,
-            "balance": 0,
-            "total": 0,
-        }
-        order_item = OrderItem.objects.filter(menu_item__id=i.pk)
-        for f in order_item:
-            item_data["total"] += f.quantity
-            item_data["balance"] += (f.price * f.quantity) - f.total_discounted_price
-            person = f.order.customer
-            person_age = datetime.datetime.now().year - person.date_of_birth.year
-            if person.gender == "M":
-                person_gender = "man"
-            elif person.gender == "F":
-                person_gender = "woman"
-            if 3 <= person_age <= 8:
-                item_data[person_gender] += 1
-                item_data["age"]["3_8"][person_gender] += 1
-            elif 9 <= person_age <= 12:
-                item_data[person_gender] += 1
-                item_data["age"]["9_12"][person_gender] += 1
-            elif 13 <= person_age <= 17:
-                item_data[person_gender] += 1
-                item_data["age"]["13_7"][person_gender] += 1
-            elif 18 <= person_age <= 26:
-                item_data[person_gender] += 1
-                item_data["age"]["18_26"][person_gender] += 1
-            elif 27 <= person_age <= 40:
-                item_data[person_gender] += 1
-                item_data["age"]["27_40"][person_gender] += 1
-            elif 41 <= person_age <= 60:
-                item_data[person_gender] += 1
-                item_data["age"]["41_60"][person_gender] += 1
-            elif 60 < person_age:
-                item_data[person_gender] += 1
-                item_data["age"]["61_above"][person_gender] += 1
-        yield item_data
+# def demography_items():
+#     items = MenuItem.objects.all()
+#     for i in items:
+#         item_data = {
+#             "name": i.food_name,
+#             "age": {
+#                 "3_8": {"man": 0, "woman": 0},
+#                 "9_12": {"man": 0, "woman": 0},
+#                 "13_7": {"man": 0, "woman": 0},
+#                 "18_26": {"man": 0, "woman": 0},
+#                 "27_40": {"man": 0, "woman": 0},
+#                 "41_60": {"man": 0, "woman": 0},
+#                 "61_above": {"man": 0, "woman": 0},
+#             },
+#             "man": 0,
+#             "woman": 0,
+#             "balance": 0,
+#             "total": 0,
+#         }
+#         order_item = OrderItem.objects.filter(menu_item__id=i.pk)
+#         for f in order_item:
+#             item_data["total"] += f.quantity
+#             item_data["balance"] += (f.price * f.quantity) - f.total_discounted_price
+#             person = f.order.customer
+#             person_age = datetime.datetime.now().year - person.date_of_birth.year
+#             if person.gender == "M":
+#                 person_gender = "man"
+#             elif person.gender == "F":
+#                 person_gender = "woman"
+#             if 3 <= person_age <= 8:
+#                 item_data[person_gender] += 1
+#                 item_data["age"]["3_8"][person_gender] += 1
+#             elif 9 <= person_age <= 12:
+#                 item_data[person_gender] += 1
+#                 item_data["age"]["9_12"][person_gender] += 1
+#             elif 13 <= person_age <= 17:
+#                 item_data[person_gender] += 1
+#                 item_data["age"]["13_7"][person_gender] += 1
+#             elif 18 <= person_age <= 26:
+#                 item_data[person_gender] += 1
+#                 item_data["age"]["18_26"][person_gender] += 1
+#             elif 27 <= person_age <= 40:
+#                 item_data[person_gender] += 1
+#                 item_data["age"]["27_40"][person_gender] += 1
+#             elif 41 <= person_age <= 60:
+#                 item_data[person_gender] += 1
+#                 item_data["age"]["41_60"][person_gender] += 1
+#             elif 60 < person_age:
+#                 item_data[person_gender] += 1
+#                 item_data["age"]["61_above"][person_gender] += 1
+#         yield item_data

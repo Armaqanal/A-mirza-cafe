@@ -16,7 +16,7 @@ from django.views.generic.base import TemplateView, RedirectView
 from django.views.generic.edit import DeleteView, CreateView, UpdateView
 from django.views.generic.list import ListView
 from .forms import EditOrderItemForm, AddOrderItemForm, AddOrderForm, TotalSalesFilter
-from user.models import Customer
+from accounts.models import Customer
 
 from .forms import EditOrderItemForm, AddOrderItemForm, AddOrderForm, TotalSalesFilter, EditOrderForm
 from .models import Order, OrderItem

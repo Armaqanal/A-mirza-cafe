@@ -6,8 +6,8 @@ urlpatterns = [
     # menu
     # path('menu/<slug:selected_category>?query=foodname', views.menu, name='menu-category'),
 
-    path('profile/', views.profile, name='profile'),
-    path('history/', views.order_history, name='history'),
+    # path('profile/', views.profile, name='profile'),
+    # path('history/', views.order_history, name='history'),
 
 
     # staff_add_part
